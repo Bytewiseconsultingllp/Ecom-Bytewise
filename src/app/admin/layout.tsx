@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import {
   LayoutDashboard,
@@ -27,16 +27,25 @@ interface User {
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter()
+  const pathname = usePathname()
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
+  // Skip auth check for login page
+  const isLoginPage = pathname === '/admin/login'
+
   useEffect(() => {
+    if (isLoginPage) {
+      setLoading(false)
+      return
+    }
+
     const checkAuth = async () => {
-      const token = localStorage.getItem('token')
+      const token = localStorage.getItem('admin_token')
       if (!token) {
-        router.push('/auth/login?redirect=/admin')
+        router.push('/admin/login')
         return
       }
 
@@ -47,24 +56,24 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         const data = await res.json()
 
         if (!data.success || data.data.role !== 'admin') {
-          router.push('/account')
+          router.push('/admin/login')
           return
         }
 
         setUser(data.data)
       } catch (error) {
-        router.push('/auth/login?redirect=/admin')
+        router.push('/admin/login')
       } finally {
         setLoading(false)
       }
     }
 
     checkAuth()
-  }, [router])
+  }, [router, isLoginPage])
 
   const handleLogout = () => {
-    localStorage.removeItem('token')
-    router.push('/auth/login')
+    localStorage.removeItem('admin_token')
+    router.push('/admin/login')
   }
 
   const navItems = [
@@ -78,7 +87,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { href: '/admin/settings', icon: Settings, label: 'Settings' },
   ]
 
-  if (loading) {
+  // Show loading only for non-login pages
+  if (loading && !isLoginPage) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
         <div className="text-center">
@@ -87,6 +97,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
       </div>
     )
+  }
+
+  // Render login page without admin layout
+  if (isLoginPage) {
+    return <>{children}</>
   }
 
   return (

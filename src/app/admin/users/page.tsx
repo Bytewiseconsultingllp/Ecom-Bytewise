@@ -23,7 +23,7 @@ export default function AdminUsers() {
   }, [])
 
   const fetchUsers = async () => {
-    const token = localStorage.getItem('token')
+    const token = localStorage.getItem('admin_token')
     try {
       const res = await fetch('/api/v1/admin/users', {
         headers: { 'Authorization': `Bearer ${token}` }
