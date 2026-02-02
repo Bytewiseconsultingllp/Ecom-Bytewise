@@ -1,17 +1,17 @@
-import mongoose, { Schema, model, models, Document } from 'mongoose';
+import mongoose, { Schema, model, models } from 'mongoose';
 
 export interface IOrderItem {
-  productId: string;
+  productId: mongoose.Types.ObjectId | string;
   name: string;
   price: number;
   quantity: number;
   image: string;
 }
 
-export interface IOrder extends Document {
-  _id: string;
+export interface IOrder {
+  _id?: mongoose.Types.ObjectId;
   orderId: string;
-  userId: string;
+  userId: mongoose.Types.ObjectId | string;
   items: IOrderItem[];
   subtotal: number;
   discount: number;
@@ -138,7 +138,7 @@ const OrderSchema = new Schema<IOrder>(
   {
     timestamps: true,
     toJSON: {
-      transform: function (doc, ret) {
+      transform: function (doc, ret: Record<string, unknown>) {
         ret.id = ret._id;
         delete ret._id;
         delete ret.__v;

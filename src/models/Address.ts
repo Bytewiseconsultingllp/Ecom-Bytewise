@@ -1,8 +1,8 @@
-import mongoose, { Schema, model, models, Document } from 'mongoose';
+import mongoose, { Schema, model, models } from 'mongoose';
 
-export interface IAddress extends Document {
-  _id: string;
-  userId: string;
+export interface IAddress {
+  _id?: mongoose.Types.ObjectId;
+  userId: mongoose.Types.ObjectId | string;
   type: 'home' | 'work' | 'other';
   name: string;
   phone: string;
@@ -71,7 +71,7 @@ const AddressSchema = new Schema<IAddress>(
   {
     timestamps: true,
     toJSON: {
-      transform: function (doc, ret) {
+      transform: function (doc, ret: Record<string, unknown>) {
         ret.id = ret._id;
         delete ret._id;
         delete ret.__v;

@@ -1,4 +1,4 @@
-import mongoose, { Schema, model, models, Document } from 'mongoose';
+import mongoose, { Schema, model, models } from 'mongoose';
 
 export interface IWalletTransaction {
   transactionId: string;
@@ -10,9 +10,9 @@ export interface IWalletTransaction {
   createdAt: Date;
 }
 
-export interface IWallet extends Document {
-  _id: string;
-  userId: string;
+export interface IWallet {
+  _id?: mongoose.Types.ObjectId;
+  userId: mongoose.Types.ObjectId | string;
   balance: number;
   transactions: IWalletTransaction[];
   lifetimeEarnings: number;

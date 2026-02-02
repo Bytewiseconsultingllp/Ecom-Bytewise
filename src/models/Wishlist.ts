@@ -1,9 +1,9 @@
-import mongoose, { Schema, model, models, Document } from 'mongoose';
+import mongoose, { Schema, model, models } from 'mongoose';
 
-export interface IWishlist extends Document {
-  _id: string;
-  userId: string;
-  productIds: string[];
+export interface IWishlist {
+  _id?: mongoose.Types.ObjectId;
+  userId: mongoose.Types.ObjectId | string;
+  productIds: (mongoose.Types.ObjectId | string)[];
   createdAt: Date;
   updatedAt: Date;
 }
