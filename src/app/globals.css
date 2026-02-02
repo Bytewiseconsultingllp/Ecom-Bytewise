@@ -29,7 +29,8 @@
   }
 
   * {
-    @apply border-border;
+    box-sizing: border-box;
+    border-color: hsl(var(--border));
   }
 
   body {
