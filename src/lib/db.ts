@@ -797,51 +797,51 @@ export const products: DBProduct[] = [
 // ==================== COUPONS ====================
 export const coupons: Coupon[] = [
   {
-    id: 'coupon_001',
     code: 'WELCOME10',
     type: 'percentage',
     value: 10,
     minOrderValue: 999,
     maxDiscount: 1000,
-    validFrom: new Date('2026-01-01'),
-    validTo: new Date('2026-12-31'),
+    validFrom: '2026-01-01',
+    validUntil: '2026-12-31',
     usageLimit: 1,
+    usedCount: 0,
     isActive: true
   },
   {
-    id: 'coupon_002',
     code: 'FLAT500',
     type: 'fixed',
     value: 500,
     minOrderValue: 4999,
     maxDiscount: 500,
-    validFrom: new Date('2026-01-01'),
-    validTo: new Date('2026-03-31'),
+    validFrom: '2026-01-01',
+    validUntil: '2026-03-31',
     usageLimit: 5,
+    usedCount: 0,
     isActive: true
   },
   {
-    id: 'coupon_003',
     code: 'ELECTRONICS15',
     type: 'percentage',
     value: 15,
     minOrderValue: 9999,
     maxDiscount: 5000,
-    validFrom: new Date('2026-01-01'),
-    validTo: new Date('2026-06-30'),
+    validFrom: '2026-01-01',
+    validUntil: '2026-06-30',
     usageLimit: 3,
+    usedCount: 0,
     isActive: true
   },
   {
-    id: 'coupon_004',
     code: 'NEWYEAR2026',
     type: 'percentage',
     value: 20,
     minOrderValue: 14999,
     maxDiscount: 10000,
-    validFrom: new Date('2026-01-01'),
-    validTo: new Date('2026-01-31'),
+    validFrom: '2026-01-01',
+    validUntil: '2026-01-31',
     usageLimit: 2,
+    usedCount: 0,
     isActive: true
   }
 ];
@@ -927,4 +927,4 @@ export function createSession(userId: string): string {
   return token;
 }
 
-export { DBProduct, DBUser, DBCoupon };
+export type { DBProduct, DBUser, DBCoupon };

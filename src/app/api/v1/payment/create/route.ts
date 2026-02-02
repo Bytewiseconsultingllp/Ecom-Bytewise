@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
       }, { status: 404 });
     }
 
-    if (order.paymentStatus === 'paid') {
+    if (order.paymentStatus === 'completed') {
       return NextResponse.json({
         success: false,
         error: {
@@ -73,9 +73,6 @@ export async function POST(request: NextRequest) {
     if (!razorpayKeyId || !razorpayKeySecret) {
       // Return mock response for development
       const mockRazorpayOrderId = `order_${Date.now()}${Math.random().toString(36).substring(2, 7)}`;
-      
-      // Store the razorpay order id
-      order.razorpayOrderId = mockRazorpayOrderId;
 
       return NextResponse.json({
         success: true,
@@ -114,8 +111,8 @@ export async function POST(request: NextRequest) {
       }
     }, razorpayKeyId, razorpayKeySecret);
 
-    // Store the razorpay order id
-    order.razorpayOrderId = razorpayOrder.id;
+    // Store the razorpay order id (would normally be stored in DB)
+    // order.razorpayOrderId = razorpayOrder.id;
 
     return NextResponse.json({
       success: true,

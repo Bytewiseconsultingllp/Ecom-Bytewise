@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
       }, { status: 404 });
     }
 
-    if (order.paymentStatus === 'paid') {
+    if (order.paymentStatus === 'completed') {
       return NextResponse.json({
         success: true,
         data: {
@@ -67,15 +67,9 @@ export async function POST(request: NextRequest) {
     if (developmentMode || !razorpayKeySecret) {
       const now = new Date();
       
-      order.paymentStatus = 'paid';
+      order.paymentStatus = 'completed';
       order.status = 'confirmed';
-      order.razorpayPaymentId = razorpay_payment_id || `pay_dev_${Date.now()}`;
       order.updatedAt = now.toISOString() as any;
-      order.timeline.push({
-        status: 'confirmed',
-        timestamp: now,
-        description: 'Payment confirmed (Development Mode)'
-      });
 
       return NextResponse.json({
         success: true,
@@ -118,15 +112,9 @@ export async function POST(request: NextRequest) {
     // Payment verified successfully
     const now = new Date();
     
-    order.paymentStatus = 'paid';
+    order.paymentStatus = 'completed';
     order.status = 'confirmed';
-    order.razorpayPaymentId = razorpay_payment_id;
     order.updatedAt = now.toISOString() as any;
-    order.timeline.push({
-      status: 'confirmed',
-      timestamp: now,
-      description: 'Payment confirmed'
-    });
 
     return NextResponse.json({
       success: true,

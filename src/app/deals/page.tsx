@@ -159,10 +159,10 @@ export default function DealsPage() {
     addToCart({
       id: product.id,
       name: product.name,
+      sku: product.id,
       price: product.discountedPrice,
-      originalPrice: product.originalPrice,
+      mrp: product.originalPrice,
       image: product.image,
-      quantity: 1,
     })
   }
 
@@ -174,11 +174,9 @@ export default function DealsPage() {
         id: product.id,
         name: product.name,
         price: product.discountedPrice,
-        originalPrice: product.originalPrice,
+        mrp: product.originalPrice,
         image: product.image,
-        brand: product.brand,
-        rating: product.rating,
-        reviews: product.reviews,
+        inStock: true,
       })
     }
   }

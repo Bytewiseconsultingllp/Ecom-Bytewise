@@ -64,29 +64,23 @@ export async function POST(
 
     // Update order status
     order.status = 'cancelled';
+    order.cancelledAt = now.toISOString();
     order.updatedAt = now.toISOString() as any;
-    order.timeline.push({
-      status: 'cancelled',
-      timestamp: now,
-      description: `Order cancelled: ${reason || 'Customer request'}`
-    });
 
     // Refund to wallet if payment was made
-    if (order.paymentStatus === 'paid') {
+    if (order.paymentStatus === 'completed') {
       const currentBalance = walletBalances.get(userId) || 0;
       const refundAmount = order.summary.total;
       
       walletBalances.set(userId, currentBalance + refundAmount);
       walletTransactions.push({
         id: generateId('txn'),
-        walletId: `wallet_${userId}`,
-        userId,
-        type: 'refund',
+        type: 'credit',
         amount: refundAmount,
-        balance: currentBalance + refundAmount,
         description: `Refund for cancelled order ${orderId}`,
-        referenceId: orderId,
-        createdAt: now
+        status: 'completed',
+        reference: orderId,
+        createdAt: now.toISOString()
       });
 
       order.paymentStatus = 'refunded';

@@ -65,7 +65,10 @@ export async function POST(request: NextRequest) {
 
     // Check validity period
     const now = new Date();
-    if (now < coupon.validFrom) {
+    const validFrom = new Date(coupon.validFrom);
+    const validTo = new Date(coupon.validUntil);
+    
+    if (now < validFrom) {
       return NextResponse.json({
         success: false,
         error: {
@@ -75,7 +78,7 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    if (now > coupon.validTo) {
+    if (now > validTo) {
       return NextResponse.json({
         success: false,
         error: {
@@ -86,7 +89,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check minimum order value
-    if (orderValue && orderValue < coupon.minOrderValue) {
+    if (orderValue && coupon.minOrderValue && orderValue < coupon.minOrderValue) {
       return NextResponse.json({
         success: false,
         error: {
@@ -100,12 +103,14 @@ export async function POST(request: NextRequest) {
     let discount = 0;
     if (orderValue) {
       if (coupon.type === 'percentage') {
-        discount = Math.min(
-          Math.round(orderValue * coupon.value / 100),
-          coupon.maxDiscount
-        );
+        const percentageDiscount = Math.round(orderValue * coupon.value / 100);
+        discount = coupon.maxDiscount 
+          ? Math.min(percentageDiscount, coupon.maxDiscount)
+          : percentageDiscount;
       } else {
-        discount = Math.min(coupon.value, coupon.maxDiscount);
+        discount = coupon.maxDiscount 
+          ? Math.min(coupon.value, coupon.maxDiscount)
+          : coupon.value;
       }
     }
 
@@ -118,7 +123,7 @@ export async function POST(request: NextRequest) {
         discount: discount,
         minOrderValue: coupon.minOrderValue,
         maxDiscount: coupon.maxDiscount,
-        validUntil: coupon.validTo,
+        validUntil: coupon.validUntil,
         message: `Coupon applied! You save ₹${discount}`
       }
     });
