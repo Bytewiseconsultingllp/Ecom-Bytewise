@@ -1,34 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { 
-  users, 
-  generateId, 
-  generateToken, 
-  findUserByEmail, 
-  createSession,
-  sessions
-} from '@/lib/db';
+import connectDB from '@/lib/mongodb';
+import User from '@/models/User';
+import Session from '@/models/Session';
+import bcrypt from 'bcryptjs';
 
-// Simple password hashing (in production use bcrypt)
-function hashPassword(password: string): string {
-  // Simple hash for demo - use bcrypt in production
-  let hash = 0;
-  for (let i = 0; i < password.length; i++) {
-    const char = password.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
-    hash = hash & hash;
+// Generate token helper
+function generateToken(): string {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let token = '';
+  for (let i = 0; i < 64; i++) {
+    token += chars.charAt(Math.floor(Math.random() * chars.length));
   }
-  return `hashed_${Math.abs(hash).toString(36)}_${password.length}`;
-}
-
-function verifyPassword(password: string, hash: string): boolean {
-  return hashPassword(password) === hash;
+  return token;
 }
 
 // POST /api/v1/auth/register
 export async function POST(request: NextRequest) {
   try {
+    await connectDB();
+
     const body = await request.json();
-    const { name, email, phone, password } = body;
+    const { name, email, phone, password, role = 'user' } = body;
 
     // Validation
     if (!name || !email || !password) {
@@ -59,7 +51,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user already exists
-    if (findUserByEmail(email)) {
+    const existingUser = await User.findOne({ email: email.toLowerCase() });
+    if (existingUser) {
       return NextResponse.json({
         success: false,
         error: {
@@ -70,44 +63,48 @@ export async function POST(request: NextRequest) {
     }
 
     // Password strength check
-    if (password.length < 8) {
+    if (password.length < 6) {
       return NextResponse.json({
         success: false,
         error: {
           code: 'WEAK_PASSWORD',
-          message: 'Password must be at least 8 characters long'
+          message: 'Password must be at least 6 characters long'
         }
       }, { status: 400 });
     }
 
-    // Create new user
-    const userId = generateId('user');
-    const hashedPassword = hashPassword(password);
-    const now = new Date();
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser = {
-      id: userId,
+    // Create new user
+    const newUser = await User.create({
       name,
       email: email.toLowerCase(),
       phone: phone || '',
       password: hashedPassword,
-      createdAt: now,
-      updatedAt: now
-    };
-
-    users.push(newUser);
+      role: role === 'admin' ? 'admin' : 'user',
+    });
 
     // Create session token
-    const token = createSession(userId);
+    const token = generateToken();
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 30); // 30 days
+
+    await Session.create({
+      userId: newUser._id.toString(),
+      token,
+      expiresAt,
+    });
 
     return NextResponse.json({
       success: true,
       data: {
-        userId,
-        name,
-        email: email.toLowerCase(),
-        phone: phone || '',
-        createdAt: now.toISOString()
+        userId: newUser._id.toString(),
+        name: newUser.name,
+        email: newUser.email,
+        phone: newUser.phone,
+        role: newUser.role,
+        createdAt: newUser.createdAt.toISOString()
       },
       token
     }, { status: 201 });
