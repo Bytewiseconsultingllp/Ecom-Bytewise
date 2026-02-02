@@ -46,55 +46,21 @@ export default function AdminWalletPage() {
   const fetchWalletData = async () => {
     setLoading(true);
     try {
-      // Simulated data for admin wallet overview
-      setStats({
-        totalBalance: 2547890,
-        totalCredits: 4500000,
-        totalDebits: 1952110,
-        pendingPayouts: 125000,
+      const token = localStorage.getItem('admin_token');
+      const res = await fetch('/api/v1/admin/wallet', {
+        headers: { 'Authorization': `Bearer ${token}` }
       });
-
-      setTransactions([
-        {
-          id: "txn_001",
-          type: "credit",
-          amount: 45000,
-          description: "Order payment received",
-          orderId: "BW-ORD-20260201-ABC12",
-          createdAt: new Date().toISOString(),
-        },
-        {
-          id: "txn_002",
-          type: "debit",
-          amount: 12500,
-          description: "Partner payout processed",
-          createdAt: new Date(Date.now() - 86400000).toISOString(),
-        },
-        {
-          id: "txn_003",
-          type: "credit",
-          amount: 78900,
-          description: "Order payment received",
-          orderId: "BW-ORD-20260201-DEF34",
-          createdAt: new Date(Date.now() - 172800000).toISOString(),
-        },
-        {
-          id: "txn_004",
-          type: "debit",
-          amount: 5000,
-          description: "Refund processed",
-          orderId: "BW-ORD-20260131-GHI56",
-          createdAt: new Date(Date.now() - 259200000).toISOString(),
-        },
-        {
-          id: "txn_005",
-          type: "credit",
-          amount: 134500,
-          description: "Order payment received",
-          orderId: "BW-ORD-20260130-JKL78",
-          createdAt: new Date(Date.now() - 345600000).toISOString(),
-        },
-      ]);
+      const data = await res.json();
+      
+      if (data.success) {
+        setStats({
+          totalBalance: data.data.stats.totalBalance,
+          totalCredits: data.data.stats.totalCredits,
+          totalDebits: data.data.stats.totalDebits,
+          pendingPayouts: data.data.stats.pendingPayouts,
+        });
+        setTransactions(data.data.transactions || []);
+      }
     } catch (error) {
       console.error("Failed to fetch wallet data:", error);
     } finally {

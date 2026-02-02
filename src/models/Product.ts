@@ -27,6 +27,7 @@ export interface IProduct {
   };
   badges: string[];
   inStock: boolean;
+  createdBy?: mongoose.Types.ObjectId | string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -115,6 +116,10 @@ const ProductSchema = new Schema<IProduct>(
     inStock: {
       type: Boolean,
       default: true,
+    },
+    createdBy: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
     },
   },
   {

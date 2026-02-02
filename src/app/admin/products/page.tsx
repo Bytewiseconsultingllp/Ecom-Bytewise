@@ -13,6 +13,7 @@ interface Product {
   inStock: boolean
   categoryId: string
   brandId: string
+  images?: Array<{ url: string; alt: string; isPrimary: boolean }>
 }
 
 export default function AdminProducts() {
@@ -26,8 +27,11 @@ export default function AdminProducts() {
   }, [])
 
   const fetchProducts = async (page = 1) => {
+    const token = localStorage.getItem('admin_token')
     try {
-      const res = await fetch(`/api/v1/products?page=${page}&limit=20`)
+      const res = await fetch(`/api/v1/admin/products?page=${page}&limit=20`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
       const data = await res.json()
       if (data.success) {
         setProducts(data.data.products)
