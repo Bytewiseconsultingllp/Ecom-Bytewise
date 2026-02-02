@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Filter, SlidersHorizontal, Grid3X3, List, ChevronDown, X } from 'lucide-react'
 import ProductCard from '@/components/products/ProductCard'
@@ -182,7 +182,7 @@ const sortOptions = [
   { label: 'Newest', value: 'newest' },
 ]
 
-export default function ProductsPage() {
+function ProductsContent() {
   const searchParams = useSearchParams()
   const categoryParam = searchParams.get('category')
   
@@ -524,5 +524,23 @@ export default function ProductsPage() {
         </div>
       )}
     </div>
+  )
+}
+
+export default function ProductsPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50">
+        <div className="bg-white border-b">
+          <div className="container-custom py-6">
+            <h1 className="text-2xl md:text-3xl font-display font-bold text-gray-900">
+              Loading Products...
+            </h1>
+          </div>
+        </div>
+      </div>
+    }>
+      <ProductsContent />
+    </Suspense>
   )
 }
