@@ -230,13 +230,28 @@ class ApiClient {
 
   // Coupon endpoints
   coupons = {
-    validate: (code: string, cartTotal: number) =>
-      this.request('/coupons/validate', { method: 'POST', body: { code, cartTotal } }),
+    validate: (code: string, orderValue: number) =>
+      this.request('/coupons/validate', { method: 'POST', body: { code, orderValue } }),
+  }
+
+  // Payment endpoints
+  payment = {
+    create: (orderId: string) =>
+      this.request('/payment/create', { method: 'POST', body: { orderId } }),
+    
+    verify: (data: {
+      razorpay_order_id: string;
+      razorpay_payment_id: string;
+      razorpay_signature: string;
+      orderId: string;
+      developmentMode?: boolean;
+    }) =>
+      this.request('/payment/verify', { method: 'POST', body: data }),
   }
 
   // User endpoints
   user = {
-    getProfile: () => this.request('/user/profile'),
+    getProfile: () => this.request('/auth/me'),
     updateProfile: (data: any) =>
       this.request('/user/profile', { method: 'PUT', body: data }),
     changePassword: (currentPassword: string, newPassword: string) =>

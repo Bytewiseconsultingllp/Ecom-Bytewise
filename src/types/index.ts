@@ -283,3 +283,33 @@ export type SortOption =
   | 'rating'
   | 'newest'
   | 'popularity'
+
+// Razorpay Types
+export interface RazorpayOrder {
+  id: string
+  entity: string
+  amount: number
+  amount_paid: number
+  amount_due: number
+  currency: string
+  receipt: string
+  status: string
+  created_at: number
+}
+
+export interface PaymentVerification {
+  razorpay_order_id: string
+  razorpay_payment_id: string
+  razorpay_signature: string
+}
+
+// Extended User type for authentication
+export interface AuthUser extends User {
+  password?: string
+}
+
+// Session type
+export interface Session {
+  userId: string
+  expiresAt: Date
+}
