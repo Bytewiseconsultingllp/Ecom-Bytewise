@@ -70,14 +70,12 @@ export async function POST(request: NextRequest) {
     // Record transaction
     const transaction = {
       id: generateId('txn'),
-      walletId: `wallet_${userId}`,
-      userId,
       type: 'credit' as const,
       amount,
-      balance: newBalance,
       description: `Added money via ${paymentMethod.toUpperCase()}`,
-      referenceId: generateId('pay'),
-      createdAt: now
+      status: 'completed' as const,
+      reference: generateId('pay'),
+      createdAt: now.toISOString()
     };
 
     walletTransactions.push(transaction);

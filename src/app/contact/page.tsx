@@ -1,219 +1,165 @@
-"use client"
+"use client";
 
-import { useState } from 'react'
-import { Mail, Phone, MapPin, MessageSquare, Send, Clock } from 'lucide-react'
+import { Mail, Phone, MapPin, Globe, Building2, User } from "lucide-react";
 
 export default function ContactPage() {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    subject: '',
-    message: '',
-  })
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [submitted, setSubmitted] = useState(false)
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    
-    setSubmitted(true)
-    setIsSubmitting(false)
-  }
-
-  if (submitted) {
-    return (
-      <div className="min-h-[60vh] flex items-center justify-center py-16">
-        <div className="text-center max-w-md mx-auto px-4">
-          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <MessageSquare className="h-10 w-10 text-green-600" />
-          </div>
-          <h2 className="text-2xl font-display font-bold text-gray-900 mb-4">
-            Message Sent!
-          </h2>
-          <p className="text-gray-500 mb-6">
-            Thank you for contacting us. Our team will get back to you within 24 hours.
-          </p>
-          <button
-            onClick={() => {
-              setSubmitted(false)
-              setFormData({ name: '', email: '', phone: '', subject: '', message: '' })
-            }}
-            className="btn-primary"
-          >
-            Send Another Message
-          </button>
-        </div>
-      </div>
-    )
-  }
-
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-gradient-to-br from-primary-900 via-primary-800 to-primary-900 text-white py-16">
-        <div className="container-custom text-center">
-          <h1 className="text-4xl font-display font-bold mb-4">Contact Us</h1>
-          <p className="text-primary-100 max-w-2xl mx-auto">
-            Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.
+    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">Contact Us</h1>
+          <p className="text-lg text-gray-600">
+            Get in touch with us for any queries or support
           </p>
         </div>
-      </div>
 
-      <div className="container-custom py-12">
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* Contact Info */}
-          <div className="lg:col-span-1 space-y-6">
-            <div className="bg-white rounded-2xl p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-6">Get in Touch</h2>
-              
-              <div className="space-y-6">
-                <div className="flex gap-4">
-                  <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <Phone className="h-6 w-6 text-primary-600" />
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-gray-900">Phone</h3>
-                    <p className="text-gray-500">+91 98765 43210</p>
-                    <p className="text-gray-500">+91 98765 43211</p>
-                  </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Contact Information */}
+          <div className="bg-white rounded-lg shadow-md p-8">
+            <h2 className="text-2xl font-semibold text-gray-900 mb-6">
+              Company Information
+            </h2>
+
+            <div className="space-y-6">
+              {/* Company Name */}
+              <div className="flex items-start">
+                <Building2 className="w-6 h-6 text-blue-600 mt-1 mr-4 flex-shrink-0" />
+                <div>
+                  <h3 className="font-semibold text-gray-900">Company</h3>
+                  <p className="text-gray-600">BYTEWISE CONSULTING LLP</p>
+                  <p className="text-sm text-gray-500 mt-1">
+                    GSTIN: 21ABEFB9294N1Z0
+                  </p>
+                  <p className="text-sm text-gray-500">PAN: ABEFB9294N</p>
                 </div>
+              </div>
 
-                <div className="flex gap-4">
-                  <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <Mail className="h-6 w-6 text-primary-600" />
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-gray-900">Email</h3>
-                    <p className="text-gray-500">support@bytewise.store</p>
-                    <p className="text-gray-500">sales@bytewise.store</p>
-                  </div>
+              {/* Phone */}
+              <div className="flex items-start">
+                <Phone className="w-6 h-6 text-blue-600 mt-1 mr-4 flex-shrink-0" />
+                <div>
+                  <h3 className="font-semibold text-gray-900">Phone</h3>
+                  <a
+                    href="tel:8332936831"
+                    className="text-blue-600 hover:underline"
+                  >
+                    8332936831
+                  </a>
                 </div>
+              </div>
 
-                <div className="flex gap-4">
-                  <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <MapPin className="h-6 w-6 text-primary-600" />
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-gray-900">Address</h3>
-                    <p className="text-gray-500">
-                      BYTEWISE CONSULTING LLP<br />
-                      123 Tech Park, Andheri East<br />
-                      Mumbai, Maharashtra 400069<br />
-                      India
-                    </p>
-                  </div>
+              {/* Email */}
+              <div className="flex items-start">
+                <Mail className="w-6 h-6 text-blue-600 mt-1 mr-4 flex-shrink-0" />
+                <div>
+                  <h3 className="font-semibold text-gray-900">Email</h3>
+                  <a
+                    href="mailto:sales@bytewiseconsulting.in"
+                    className="text-blue-600 hover:underline"
+                  >
+                    sales@bytewiseconsulting.in
+                  </a>
                 </div>
+              </div>
 
-                <div className="flex gap-4">
-                  <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <Clock className="h-6 w-6 text-primary-600" />
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-gray-900">Business Hours</h3>
-                    <p className="text-gray-500">Monday - Saturday</p>
-                    <p className="text-gray-500">9:00 AM - 6:00 PM IST</p>
-                  </div>
+              {/* Address */}
+              <div className="flex items-start">
+                <MapPin className="w-6 h-6 text-blue-600 mt-1 mr-4 flex-shrink-0" />
+                <div>
+                  <h3 className="font-semibold text-gray-900">Address</h3>
+                  <p className="text-gray-600">
+                    B8 116, Kendriya Vihar, Tamando
+                    <br />
+                    Bhubaneswar, Patasahanipur
+                    <br />
+                    Odisha 752054
+                  </p>
+                  <a
+                    href="https://maps.app.goo.gl/jeX3BgGWjxUpjiyq7"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline text-sm mt-2 inline-block"
+                  >
+                    View on Google Maps →
+                  </a>
+                </div>
+              </div>
+
+              {/* Website */}
+              <div className="flex items-start">
+                <Globe className="w-6 h-6 text-blue-600 mt-1 mr-4 flex-shrink-0" />
+                <div>
+                  <h3 className="font-semibold text-gray-900">Website</h3>
+                  <a
+                    href="https://www.bytewiseconsulting.in/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline"
+                  >
+                    www.bytewiseconsulting.in
+                  </a>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Contact Form */}
-          <div className="lg:col-span-2">
-            <div className="bg-white rounded-2xl p-6 lg:p-8">
-              <h2 className="text-xl font-semibold text-gray-900 mb-6">Send us a Message</h2>
-              
-              <form onSubmit={handleSubmit} className="space-y-5">
-                <div className="grid md:grid-cols-2 gap-5">
+          {/* Co-Founders & Map */}
+          <div className="space-y-8">
+            {/* Co-Founders */}
+            <div className="bg-white rounded-lg shadow-md p-8">
+              <h2 className="text-2xl font-semibold text-gray-900 mb-6">
+                Co-Founders
+              </h2>
+              <div className="space-y-4">
+                <div className="flex items-center">
+                  <User className="w-6 h-6 text-blue-600 mr-4 flex-shrink-0" />
                   <div>
-                    <label className="label">Full Name *</label>
-                    <input
-                      type="text"
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      className="input"
-                      placeholder="John Doe"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="label">Email Address *</label>
-                    <input
-                      type="email"
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="input"
-                      placeholder="you@example.com"
-                      required
-                    />
+                    <p className="font-semibold text-gray-900">
+                      NABA RATAN PATRA
+                    </p>
+                    <p className="text-sm text-gray-500">Co-Founder</p>
                   </div>
                 </div>
-
-                <div className="grid md:grid-cols-2 gap-5">
+                <div className="flex items-center">
+                  <User className="w-6 h-6 text-blue-600 mr-4 flex-shrink-0" />
                   <div>
-                    <label className="label">Phone Number</label>
-                    <input
-                      type="tel"
-                      value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      className="input"
-                      placeholder="+91 98765 43210"
-                    />
-                  </div>
-                  <div>
-                    <label className="label">Subject *</label>
-                    <select
-                      value={formData.subject}
-                      onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                      className="input"
-                      required
-                    >
-                      <option value="">Select a topic</option>
-                      <option value="order">Order Related</option>
-                      <option value="product">Product Inquiry</option>
-                      <option value="return">Returns & Refunds</option>
-                      <option value="technical">Technical Support</option>
-                      <option value="partnership">Partnership</option>
-                      <option value="other">Other</option>
-                    </select>
+                    <p className="font-semibold text-gray-900">AMAN IRSHAD</p>
+                    <p className="text-sm text-gray-500">Co-Founder</p>
                   </div>
                 </div>
+              </div>
+            </div>
 
-                <div>
-                  <label className="label">Message *</label>
-                  <textarea
-                    value={formData.message}
-                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    className="input min-h-[150px]"
-                    placeholder="How can we help you?"
-                    required
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="btn-primary flex items-center gap-2"
-                >
-                  {isSubmitting ? (
-                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  ) : (
-                    <>
-                      <Send className="h-5 w-5" />
-                      Send Message
-                    </>
-                  )}
-                </button>
-              </form>
+            {/* Google Map */}
+            <div className="bg-white rounded-lg shadow-md p-8">
+              <h2 className="text-2xl font-semibold text-gray-900 mb-6">
+                Location
+              </h2>
+              <div className="aspect-video w-full">
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3742.0123456789!2d85.8123456!3d20.2345678!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjDCsDE0JzA0LjQiTiA4NcKwNDgnNDQuNCJF!5e0!3m2!1sen!2sin!4v1234567890123!5m2!1sen!2sin"
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  className="rounded-lg"
+                ></iframe>
+              </div>
+              <a
+                href="https://maps.app.goo.gl/jeX3BgGWjxUpjiyq7"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block mt-4 text-blue-600 hover:underline"
+              >
+                Open in Google Maps →
+              </a>
             </div>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }

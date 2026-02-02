@@ -34,17 +34,11 @@ export async function POST(request: NextRequest) {
         
         if (orderId) {
           const order = orders.find(o => o.id === orderId);
-          if (order && order.paymentStatus !== 'paid') {
+          if (order && order.paymentStatus !== 'completed') {
             const now = new Date();
-            order.paymentStatus = 'paid';
+            order.paymentStatus = 'completed';
             order.status = 'confirmed';
-            order.razorpayPaymentId = payment.id;
             order.updatedAt = now.toISOString() as any;
-            order.timeline.push({
-              status: 'confirmed',
-              timestamp: now,
-              description: 'Payment captured via webhook'
-            });
           }
         }
         break;
@@ -81,22 +75,15 @@ export async function POST(request: NextRequest) {
             
             walletTransactions.push({
               id: generateId('txn'),
-              walletId: `wallet_${userId}`,
-              userId,
-              type: 'refund',
+              type: 'credit',
               amount: refundAmount,
-              balance: currentBalance + refundAmount,
               description: `Refund for order ${orderId}`,
-              referenceId: refund.id,
-              createdAt: now
+              status: 'completed',
+              reference: refund.id,
+              createdAt: now.toISOString()
             });
 
             order.paymentStatus = 'refunded';
-            order.timeline.push({
-              status: 'refunded',
-              timestamp: now,
-              description: `Refund of ₹${refundAmount} processed`
-            });
           }
         }
         break;

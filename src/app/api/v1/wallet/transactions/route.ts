@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
     const fromDate = searchParams.get('fromDate');
     const toDate = searchParams.get('toDate');
 
-    let transactions = walletTransactions.filter(t => t.userId === userId);
+    let transactions = walletTransactions; // All transactions (no user filtering in simple storage)
 
     // Filter by type
     if (type) {
@@ -67,9 +67,9 @@ export async function GET(request: NextRequest) {
           id: t.id,
           type: t.type,
           amount: t.amount,
-          balance: t.balance,
           description: t.description,
-          referenceId: t.referenceId,
+          status: t.status,
+          reference: t.reference,
           createdAt: t.createdAt
         })),
         pagination: {

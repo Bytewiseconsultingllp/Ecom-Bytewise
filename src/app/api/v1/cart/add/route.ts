@@ -85,8 +85,14 @@ export async function POST(request: NextRequest) {
     } else {
       // Add new item
       cartItems.push({
+        id: `${userId}-${productId}`,
         productId,
+        name: product.name,
+        sku: product.sku,
+        price: product.price,
+        mrp: product.mrp,
         quantity,
+        image: product.images[0]?.url || '',
         addedAt: new Date()
       });
     }

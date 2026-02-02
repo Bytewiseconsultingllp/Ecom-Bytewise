@@ -52,12 +52,12 @@ export async function GET(
       data: {
         orderId: order.id,
         currentStatus: order.status,
-        trackingNumber: order.trackingNumber || null,
-        carrier: order.carrier || null,
+        trackingNumber: order.trackingInfo?.trackingNumber || null,
+        carrier: order.trackingInfo?.carrier || null,
         estimatedDelivery: order.status !== 'delivered' && order.status !== 'cancelled' 
           ? estimatedDelivery.toISOString().split('T')[0]
           : null,
-        timeline: order.timeline
+        trackingInfo: order.trackingInfo
       }
     });
 

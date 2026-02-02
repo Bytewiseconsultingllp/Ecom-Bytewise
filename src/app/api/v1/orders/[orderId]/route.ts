@@ -54,13 +54,12 @@ export async function GET(
         shippingAddress: order.shippingAddress,
         billingAddress: order.billingAddress,
         summary: order.summary,
-        couponCode: order.couponCode,
-        trackingNumber: order.trackingNumber,
-        carrier: order.carrier,
-        timeline: order.timeline,
+        trackingInfo: order.trackingInfo,
         notes: order.notes,
         createdAt: order.createdAt,
-        updatedAt: order.updatedAt
+        updatedAt: order.updatedAt,
+        deliveredAt: order.deliveredAt,
+        cancelledAt: order.cancelledAt
       }
     });
 

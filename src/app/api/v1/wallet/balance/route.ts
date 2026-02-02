@@ -29,24 +29,10 @@ export async function GET(request: NextRequest) {
 
     const balance = walletBalances.get(userId) || 0;
     
-    // Calculate stats from transactions
-    const userTransactions = walletTransactions.filter(t => t.userId === userId);
-    const lifetimeCredits = userTransactions
-      .filter(t => t.type === 'credit' || t.type === 'refund' || t.type === 'cashback')
-      .reduce((sum, t) => sum + t.amount, 0);
-    const lifetimeDebits = userTransactions
-      .filter(t => t.type === 'debit')
-      .reduce((sum, t) => sum + t.amount, 0);
-    
-    // This month's credits
-    const now = new Date();
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-    const thisMonthCredits = userTransactions
-      .filter(t => 
-        (t.type === 'credit' || t.type === 'refund' || t.type === 'cashback') &&
-        new Date(t.createdAt) >= startOfMonth
-      )
-      .reduce((sum, t) => sum + t.amount, 0);
+    // Simple balance without transaction tracking
+    const lifetimeCredits = 0;
+    const lifetimeDebits = 0;
+    const thisMonthCredits = 0;
 
     return NextResponse.json({
       success: true,

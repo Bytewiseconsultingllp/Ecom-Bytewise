@@ -190,6 +190,7 @@ export interface CartItem {
   mrp: number
   quantity: number
   image: string
+  addedAt?: Date
 }
 
 // Wishlist Types

@@ -69,10 +69,12 @@ export async function GET(request: NextRequest) {
           createdAt: o.createdAt,
           items: o.items.map(item => ({
             productId: item.productId,
-            productName: item.productName,
-            productImage: item.productImage,
+            name: item.name,
+            image: item.image,
             quantity: item.quantity,
-            price: item.price
+            price: item.price,
+            sku: item.sku,
+            subtotal: item.subtotal
           }))
         })),
         pagination: {
@@ -198,22 +200,27 @@ export async function POST(request: NextRequest) {
     // Calculate discount from coupon
     let couponDiscount = 0;
     if (couponCode) {
-      const coupon = coupons.find(c => 
-        c.code.toUpperCase() === couponCode.toUpperCase() && 
-        c.isActive &&
-        new Date() >= c.validFrom &&
-        new Date() <= c.validTo &&
-        subtotal >= c.minOrderValue
-      );
+      const now = new Date();
+      const coupon = coupons.find(c => {
+        const validFrom = new Date(c.validFrom);
+        const validTo = new Date(c.validUntil);
+        return c.code.toUpperCase() === couponCode.toUpperCase() && 
+          c.isActive &&
+          now >= validFrom &&
+          now <= validTo &&
+          (!c.minOrderValue || subtotal >= c.minOrderValue);
+      });
       
       if (coupon) {
         if (coupon.type === 'percentage') {
-          couponDiscount = Math.min(
-            Math.round(subtotal * coupon.value / 100),
-            coupon.maxDiscount
-          );
+          const percentageDiscount = Math.round(subtotal * coupon.value / 100);
+          couponDiscount = coupon.maxDiscount 
+            ? Math.min(percentageDiscount, coupon.maxDiscount)
+            : percentageDiscount;
         } else {
-          couponDiscount = Math.min(coupon.value, coupon.maxDiscount);
+          couponDiscount = coupon.maxDiscount 
+            ? Math.min(coupon.value, coupon.maxDiscount)
+            : coupon.value;
         }
       }
     }
@@ -238,7 +245,6 @@ export async function POST(request: NextRequest) {
       paymentMethod: paymentMethod as 'prepaid' | 'cod' | 'wallet',
       paymentStatus: paymentMethod === 'cod' ? 'pending' : 'pending',
       status: 'pending_payment',
-      couponCode,
       summary: {
         subtotal,
         discount: totalDiscount,
@@ -247,13 +253,6 @@ export async function POST(request: NextRequest) {
         total
       },
       notes,
-      timeline: [
-        {
-          status: 'order_placed',
-          timestamp: now,
-          description: 'Order placed successfully'
-        }
-      ],
       createdAt: now.toISOString() as any,
       updatedAt: now.toISOString() as any
     };
@@ -279,23 +278,16 @@ export async function POST(request: NextRequest) {
       walletBalances.set(userId, currentBalance - total);
       walletTransactions.push({
         id: generateId('txn'),
-        walletId: `wallet_${userId}`,
-        userId,
         type: 'debit',
         amount: total,
-        balance: currentBalance - total,
         description: `Payment for order ${orderId}`,
-        referenceId: orderId,
-        createdAt: now
+        status: 'completed',
+        reference: orderId,
+        createdAt: now.toISOString()
       });
 
-      newOrder.paymentStatus = 'paid';
+      newOrder.paymentStatus = 'completed';
       newOrder.status = 'confirmed';
-      newOrder.timeline.push({
-        status: 'confirmed',
-        timestamp: now,
-        description: 'Payment confirmed via wallet'
-      });
     }
 
     return NextResponse.json({
