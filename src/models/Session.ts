@@ -1,8 +1,8 @@
-import mongoose, { Schema, model, models, Document } from 'mongoose';
+import mongoose, { Schema, model, models } from 'mongoose';
 
-export interface ISession extends Document {
-  _id: string;
-  userId: string;
+export interface ISession {
+  _id?: mongoose.Types.ObjectId;
+  userId: mongoose.Types.ObjectId | string;
   token: string;
   expiresAt: Date;
   createdAt: Date;

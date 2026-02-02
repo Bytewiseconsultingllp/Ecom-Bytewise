@@ -1,7 +1,7 @@
-import mongoose, { Schema, model, models, Document } from 'mongoose';
+import mongoose, { Schema, model, models } from 'mongoose';
 
-export interface IUser extends Document {
-  _id: string;
+export interface IUser {
+  _id?: mongoose.Types.ObjectId;
   name: string;
   email: string;
   phone: string;
@@ -65,7 +65,7 @@ const UserSchema = new Schema<IUser>(
   {
     timestamps: true,
     toJSON: {
-      transform: function (doc, ret) {
+      transform: function (doc, ret: Record<string, unknown>) {
         ret.id = ret._id;
         delete ret._id;
         delete ret.__v;

@@ -1,14 +1,14 @@
-import mongoose, { Schema, model, models, Document } from 'mongoose';
+import mongoose, { Schema, model, models } from 'mongoose';
 
-export interface IProduct extends Document {
-  _id: string;
+export interface IProduct {
+  _id?: mongoose.Types.ObjectId;
   sku: string;
   name: string;
   slug: string;
   description: string;
   shortDescription: string;
-  categoryId: string;
-  brandId: string;
+  categoryId: mongoose.Types.ObjectId | string;
+  brandId: mongoose.Types.ObjectId | string;
   price: number;
   mrp: number;
   discount: number;
@@ -120,7 +120,7 @@ const ProductSchema = new Schema<IProduct>(
   {
     timestamps: true,
     toJSON: {
-      transform: function (doc, ret) {
+      transform: function (doc, ret: Record<string, unknown>) {
         ret.id = ret._id;
         delete ret._id;
         delete ret.__v;

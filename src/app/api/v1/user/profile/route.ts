@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: {
-        userId: auth.user._id.toString(),
+        userId: auth.user._id?.toString() || '',
         name: auth.user.name,
         email: auth.user.email,
         phone: auth.user.phone,
