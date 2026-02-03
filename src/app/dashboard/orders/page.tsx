@@ -104,43 +104,45 @@ export default function OrdersPage() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">My Orders</h1>
+    <div className="max-w-4xl mx-auto">
+      <h1 className="text-2xl font-display font-bold text-gray-900 mb-8">My Orders</h1>
 
       {orders.length === 0 ? (
-        <div className="bg-white rounded-xl border p-8 text-center">
-          <Package className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No orders yet</h3>
-          <p className="text-gray-600 mb-4">
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-12 text-center">
+          <div className="w-20 h-20 bg-gradient-to-br from-gray-100 to-gray-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <Package className="h-10 w-10 text-gray-400" />
+          </div>
+          <h3 className="text-xl font-display font-bold text-gray-900 mb-2">No orders yet</h3>
+          <p className="text-gray-500 mb-6">
             When you place orders, they will appear here.
           </p>
           <Link
             href="/"
-            className="inline-flex items-center justify-center px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-primary-600 to-primary-700 text-white font-semibold rounded-xl shadow-lg shadow-primary-200 hover:from-primary-700 hover:to-primary-800 transition-all"
           >
             Start Shopping
           </Link>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-5">
           {orders.map((order) => (
-            <div key={order.orderId} className="bg-white rounded-xl border overflow-hidden">
+            <div key={order.orderId} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-shadow">
               {/* Order Header */}
-              <div className="flex items-center justify-between px-4 py-3 bg-gray-50 border-b">
-                <div className="flex items-center gap-4">
+              <div className="flex items-center justify-between px-5 py-4 bg-gradient-to-r from-gray-50 to-white border-b border-gray-100">
+                <div className="flex items-center gap-6">
                   <div>
-                    <p className="text-sm text-gray-500">Order ID</p>
-                    <p className="font-mono text-sm font-medium">{order.orderId}</p>
+                    <p className="text-xs text-gray-500 uppercase tracking-wider">Order ID</p>
+                    <p className="font-mono text-sm font-bold text-gray-900">{order.orderId}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500">Date</p>
-                    <p className="text-sm font-medium">
+                    <p className="text-xs text-gray-500 uppercase tracking-wider">Date</p>
+                    <p className="text-sm font-semibold text-gray-900">
                       {new Date(order.createdAt).toLocaleDateString()}
                     </p>
                   </div>
                 </div>
                 <span
-                  className={`px-3 py-1 rounded-full text-xs font-medium capitalize ${getStatusBadge(
+                  className={`px-4 py-1.5 rounded-full text-xs font-bold capitalize ${getStatusBadge(
                     order.status
                   )}`}
                 >
@@ -149,13 +151,13 @@ export default function OrdersPage() {
               </div>
 
               {/* Order Items */}
-              <div className="p-4">
+              <div className="p-5">
                 {order.items.slice(0, 2).map((item, index) => (
                   <div
                     key={index}
-                    className="flex items-center gap-4 py-2"
+                    className="flex items-center gap-4 py-3 border-b border-gray-50 last:border-0"
                   >
-                    <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
+                    <div className="w-16 h-16 bg-gray-100 rounded-xl flex items-center justify-center overflow-hidden">
                       {item.image ? (
                         <img
                           src={item.image}
@@ -167,32 +169,32 @@ export default function OrdersPage() {
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium text-gray-900 truncate">{item.name}</p>
+                      <p className="font-semibold text-gray-900 truncate">{item.name}</p>
                       <p className="text-sm text-gray-500">Qty: {item.quantity}</p>
                     </div>
-                    <p className="font-medium text-gray-900">
+                    <p className="font-bold text-gray-900">
                       {formatCurrency(item.price * item.quantity)}
                     </p>
                   </div>
                 ))}
                 {order.items.length > 2 && (
-                  <p className="text-sm text-gray-500 mt-2">
+                  <p className="text-sm text-gray-500 mt-3 font-medium">
                     +{order.items.length - 2} more item(s)
                   </p>
                 )}
               </div>
 
               {/* Order Footer */}
-              <div className="flex items-center justify-between px-4 py-3 border-t bg-gray-50">
+              <div className="flex items-center justify-between px-5 py-4 border-t border-gray-100 bg-gradient-to-r from-gray-50 to-white">
                 <div>
-                  <p className="text-sm text-gray-500">Total</p>
-                  <p className="text-lg font-bold text-gray-900">
+                  <p className="text-xs text-gray-500 uppercase tracking-wider">Total</p>
+                  <p className="text-xl font-bold bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent">
                     {formatCurrency(order.totalAmount)}
                   </p>
                 </div>
                 <Link
                   href={`/dashboard/orders/${order.orderId}`}
-                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                  className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-xl hover:from-primary-700 hover:to-primary-800 transition-all text-sm font-semibold shadow-lg shadow-primary-200"
                 >
                   <Eye className="h-4 w-4" />
                   View Details

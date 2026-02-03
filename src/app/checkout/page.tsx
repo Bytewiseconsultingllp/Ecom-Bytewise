@@ -79,25 +79,25 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
       <div className="container-custom py-8">
         {/* Breadcrumb */}
         <nav className="flex items-center gap-2 text-sm mb-8">
-          <Link href="/cart" className="text-gray-500 hover:text-primary-600">Cart</Link>
+          <Link href="/cart" className="text-gray-500 hover:text-primary-600 transition-colors">Cart</Link>
           <ChevronRight className="h-4 w-4 text-gray-400" />
           <span className="text-gray-900 font-medium">Checkout</span>
         </nav>
 
         {/* Progress Steps */}
-        <div className="bg-white rounded-2xl p-6 mb-8">
+        <div className="bg-white rounded-2xl p-6 md:p-8 mb-8 shadow-sm border border-gray-100">
           <div className="flex items-center justify-between max-w-2xl mx-auto">
             {steps.map((step, index) => (
               <div key={step.id} className="flex items-center">
                 <div className="flex flex-col items-center">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                  <div className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${
                     index <= stepIndex 
-                      ? 'bg-primary-600 text-white' 
-                      : 'bg-gray-200 text-gray-500'
+                      ? 'bg-gradient-to-br from-primary-600 to-primary-700 text-white shadow-lg shadow-primary-200' 
+                      : 'bg-gray-100 text-gray-400'
                   }`}>
                     {index < stepIndex ? (
                       <Check className="h-5 w-5" />
@@ -105,15 +105,15 @@ export default function CheckoutPage() {
                       <step.icon className="h-5 w-5" />
                     )}
                   </div>
-                  <span className={`text-sm mt-2 ${
-                    index <= stepIndex ? 'text-primary-600 font-medium' : 'text-gray-500'
+                  <span className={`text-sm mt-2 font-medium ${
+                    index <= stepIndex ? 'text-primary-600' : 'text-gray-400'
                   }`}>
                     {step.label}
                   </span>
                 </div>
                 {index < steps.length - 1 && (
-                  <div className={`w-24 md:w-32 h-1 mx-2 rounded ${
-                    index < stepIndex ? 'bg-primary-600' : 'bg-gray-200'
+                  <div className={`w-20 md:w-32 h-1.5 mx-2 rounded-full transition-all ${
+                    index < stepIndex ? 'bg-gradient-to-r from-primary-600 to-primary-500' : 'bg-gray-100'
                   }`} />
                 )}
               </div>
@@ -127,73 +127,73 @@ export default function CheckoutPage() {
             <form onSubmit={handleSubmit}>
               {/* Address Step */}
               {currentStep === 'address' && (
-                <div className="bg-white rounded-2xl p-6">
-                  <h2 className="text-xl font-semibold text-gray-900 mb-6">Delivery Address</h2>
+                <div className="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-gray-100">
+                  <h2 className="text-xl font-display font-bold text-gray-900 mb-6">Delivery Address</h2>
                   
-                  <div className="grid md:grid-cols-2 gap-4">
+                  <div className="grid md:grid-cols-2 gap-5">
                     <div className="md:col-span-2">
-                      <label className="label">Full Name *</label>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">Full Name *</label>
                       <input
                         type="text"
                         name="fullName"
                         value={formData.fullName}
                         onChange={handleInputChange}
-                        className="input"
+                        className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all"
                         required
                       />
                     </div>
                     <div>
-                      <label className="label">Email *</label>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">Email *</label>
                       <input
                         type="email"
                         name="email"
                         value={formData.email}
                         onChange={handleInputChange}
-                        className="input"
+                        className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all"
                         required
                       />
                     </div>
                     <div>
-                      <label className="label">Phone *</label>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">Phone *</label>
                       <input
                         type="tel"
                         name="phone"
                         value={formData.phone}
                         onChange={handleInputChange}
-                        className="input"
+                        className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all"
                         required
                       />
                     </div>
                     <div className="md:col-span-2">
-                      <label className="label">Address *</label>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">Address *</label>
                       <input
                         type="text"
                         name="address"
                         value={formData.address}
                         onChange={handleInputChange}
-                        className="input"
+                        className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all"
                         placeholder="Street address, apartment, etc."
                         required
                       />
                     </div>
                     <div>
-                      <label className="label">City *</label>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">City *</label>
                       <input
                         type="text"
                         name="city"
                         value={formData.city}
                         onChange={handleInputChange}
-                        className="input"
+                        className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all"
                         required
                       />
                     </div>
                     <div>
-                      <label className="label">State *</label>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">State *</label>
                       <select
                         name="state"
                         value={formData.state}
                         onChange={handleInputChange}
-                        className="input"
+                        className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all bg-white"
                         required
                       >
                         <option value="">Select State</option>
@@ -206,13 +206,13 @@ export default function CheckoutPage() {
                       </select>
                     </div>
                     <div>
-                      <label className="label">PIN Code *</label>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">PIN Code *</label>
                       <input
                         type="text"
                         name="pincode"
                         value={formData.pincode}
                         onChange={handleInputChange}
-                        className="input"
+                        className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all"
                         pattern="[0-9]{6}"
                         maxLength={6}
                         required
@@ -220,7 +220,7 @@ export default function CheckoutPage() {
                     </div>
                   </div>
 
-                  <button type="submit" className="w-full btn-primary mt-6">
+                  <button type="submit" className="w-full py-4 bg-gradient-to-r from-primary-600 to-primary-700 text-white font-semibold rounded-xl shadow-lg shadow-primary-200 hover:from-primary-700 hover:to-primary-800 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-all mt-8">
                     Continue to Payment
                   </button>
                 </div>
@@ -228,12 +228,12 @@ export default function CheckoutPage() {
 
               {/* Payment Step */}
               {currentStep === 'payment' && (
-                <div className="bg-white rounded-2xl p-6">
-                  <h2 className="text-xl font-semibold text-gray-900 mb-6">Payment Method</h2>
+                <div className="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-gray-100">
+                  <h2 className="text-xl font-display font-bold text-gray-900 mb-6">Payment Method</h2>
                   
                   <div className="space-y-4">
-                    <label className={`flex items-center gap-4 p-4 border rounded-xl cursor-pointer transition-all ${
-                      formData.paymentMethod === 'card' ? 'border-primary-600 bg-primary-50' : 'hover:border-gray-300'
+                    <label className={`flex items-center gap-4 p-5 border-2 rounded-xl cursor-pointer transition-all ${
+                      formData.paymentMethod === 'card' ? 'border-primary-500 bg-primary-50/50 shadow-sm' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                     }`}>
                       <input
                         type="radio"
@@ -241,17 +241,19 @@ export default function CheckoutPage() {
                         value="card"
                         checked={formData.paymentMethod === 'card'}
                         onChange={handleInputChange}
-                        className="w-4 h-4 text-primary-600"
+                        className="w-5 h-5 text-primary-600"
                       />
-                      <CreditCard className="h-6 w-6 text-gray-600" />
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                        <CreditCard className="h-6 w-6 text-white" />
+                      </div>
                       <div>
-                        <p className="font-medium text-gray-900">Credit / Debit Card</p>
+                        <p className="font-semibold text-gray-900">Credit / Debit Card</p>
                         <p className="text-sm text-gray-500">Pay securely with your card</p>
                       </div>
                     </label>
 
-                    <label className={`flex items-center gap-4 p-4 border rounded-xl cursor-pointer transition-all ${
-                      formData.paymentMethod === 'upi' ? 'border-primary-600 bg-primary-50' : 'hover:border-gray-300'
+                    <label className={`flex items-center gap-4 p-5 border-2 rounded-xl cursor-pointer transition-all ${
+                      formData.paymentMethod === 'upi' ? 'border-primary-500 bg-primary-50/50 shadow-sm' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                     }`}>
                       <input
                         type="radio"
@@ -259,17 +261,19 @@ export default function CheckoutPage() {
                         value="upi"
                         checked={formData.paymentMethod === 'upi'}
                         onChange={handleInputChange}
-                        className="w-4 h-4 text-primary-600"
+                        className="w-5 h-5 text-primary-600"
                       />
-                      <Wallet className="h-6 w-6 text-gray-600" />
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center">
+                        <Wallet className="h-6 w-6 text-white" />
+                      </div>
                       <div>
-                        <p className="font-medium text-gray-900">UPI</p>
+                        <p className="font-semibold text-gray-900">UPI</p>
                         <p className="text-sm text-gray-500">Pay using UPI apps</p>
                       </div>
                     </label>
 
-                    <label className={`flex items-center gap-4 p-4 border rounded-xl cursor-pointer transition-all ${
-                      formData.paymentMethod === 'cod' ? 'border-primary-600 bg-primary-50' : 'hover:border-gray-300'
+                    <label className={`flex items-center gap-4 p-5 border-2 rounded-xl cursor-pointer transition-all ${
+                      formData.paymentMethod === 'cod' ? 'border-primary-500 bg-primary-50/50 shadow-sm' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                     }`}>
                       <input
                         type="radio"
@@ -277,25 +281,27 @@ export default function CheckoutPage() {
                         value="cod"
                         checked={formData.paymentMethod === 'cod'}
                         onChange={handleInputChange}
-                        className="w-4 h-4 text-primary-600"
+                        className="w-5 h-5 text-primary-600"
                       />
-                      <Truck className="h-6 w-6 text-gray-600" />
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center">
+                        <Truck className="h-6 w-6 text-white" />
+                      </div>
                       <div>
-                        <p className="font-medium text-gray-900">Cash on Delivery</p>
+                        <p className="font-semibold text-gray-900">Cash on Delivery</p>
                         <p className="text-sm text-gray-500">Pay when you receive</p>
                       </div>
                     </label>
                   </div>
 
-                  <div className="flex gap-4 mt-6">
+                  <div className="flex gap-4 mt-8">
                     <button
                       type="button"
                       onClick={() => setCurrentStep('address')}
-                      className="flex-1 btn-secondary"
+                      className="flex-1 py-4 border-2 border-gray-200 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 transition-all"
                     >
                       Back
                     </button>
-                    <button type="submit" className="flex-1 btn-primary">
+                    <button type="submit" className="flex-1 py-4 bg-gradient-to-r from-primary-600 to-primary-700 text-white font-semibold rounded-xl shadow-lg shadow-primary-200 hover:from-primary-700 hover:to-primary-800 transition-all">
                       Review Order
                     </button>
                   </div>
@@ -306,18 +312,18 @@ export default function CheckoutPage() {
               {currentStep === 'review' && (
                 <div className="space-y-6">
                   {/* Delivery Address */}
-                  <div className="bg-white rounded-2xl p-6">
+                  <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="font-semibold text-gray-900">Delivery Address</h3>
+                      <h3 className="font-display font-bold text-gray-900">Delivery Address</h3>
                       <button
                         type="button"
                         onClick={() => setCurrentStep('address')}
-                        className="text-primary-600 text-sm font-medium"
+                        className="text-primary-600 text-sm font-semibold hover:text-primary-700 transition-colors"
                       >
                         Edit
                       </button>
                     </div>
-                    <p className="text-gray-600">
+                    <p className="text-gray-600 leading-relaxed">
                       {formData.fullName}<br />
                       {formData.address}<br />
                       {formData.city}, {formData.state} - {formData.pincode}<br />
@@ -326,13 +332,13 @@ export default function CheckoutPage() {
                   </div>
 
                   {/* Payment Method */}
-                  <div className="bg-white rounded-2xl p-6">
+                  <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="font-semibold text-gray-900">Payment Method</h3>
+                      <h3 className="font-display font-bold text-gray-900">Payment Method</h3>
                       <button
                         type="button"
                         onClick={() => setCurrentStep('payment')}
-                        className="text-primary-600 text-sm font-medium"
+                        className="text-primary-600 text-sm font-semibold hover:text-primary-700 transition-colors"
                       >
                         Edit
                       </button>
@@ -345,21 +351,21 @@ export default function CheckoutPage() {
                   </div>
 
                   {/* Order Items */}
-                  <div className="bg-white rounded-2xl p-6">
-                    <h3 className="font-semibold text-gray-900 mb-4">Order Items</h3>
+                  <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                    <h3 className="font-display font-bold text-gray-900 mb-4">Order Items</h3>
                     <div className="space-y-4">
                       {items.map((item) => (
-                        <div key={item.id} className="flex gap-4">
+                        <div key={item.id} className="flex gap-4 p-3 bg-gray-50 rounded-xl">
                           <img
                             src={item.image}
                             alt={item.name}
                             className="w-16 h-16 object-cover rounded-lg"
                           />
                           <div className="flex-1">
-                            <p className="font-medium text-gray-900">{item.name}</p>
+                            <p className="font-semibold text-gray-900">{item.name}</p>
                             <p className="text-sm text-gray-500">Qty: {item.quantity}</p>
                           </div>
-                          <p className="font-medium">₹{(item.price * item.quantity).toLocaleString()}</p>
+                          <p className="font-semibold text-gray-900">₹{(item.price * item.quantity).toLocaleString()}</p>
                         </div>
                       ))}
                     </div>
@@ -369,14 +375,14 @@ export default function CheckoutPage() {
                     <button
                       type="button"
                       onClick={() => setCurrentStep('payment')}
-                      className="flex-1 btn-secondary"
+                      className="flex-1 py-4 border-2 border-gray-200 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 transition-all"
                     >
                       Back
                     </button>
                     <button
                       type="submit"
                       disabled={isProcessing}
-                      className="flex-1 btn-primary flex items-center justify-center gap-2"
+                      className="flex-1 py-4 bg-gradient-to-r from-primary-600 to-primary-700 text-white font-semibold rounded-xl shadow-lg shadow-primary-200 hover:from-primary-700 hover:to-primary-800 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                     >
                       {isProcessing ? (
                         <>
@@ -398,35 +404,35 @@ export default function CheckoutPage() {
 
           {/* Order Summary */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-2xl p-6 sticky top-24">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Order Summary</h2>
+            <div className="bg-white rounded-2xl p-6 md:p-8 sticky top-24 shadow-sm border border-gray-100">
+              <h2 className="text-lg font-display font-bold text-gray-900 mb-6">Order Summary</h2>
 
-              <div className="space-y-3 pb-4 border-b">
+              <div className="space-y-4 pb-5 border-b border-gray-100">
                 <div className="flex justify-between">
                   <span className="text-gray-600">Subtotal ({items.length} items)</span>
-                  <span className="font-medium">₹{subtotal.toLocaleString()}</span>
+                  <span className="font-semibold text-gray-900">₹{subtotal.toLocaleString()}</span>
                 </div>
                 {savings > 0 && (
-                  <div className="flex justify-between text-green-600">
-                    <span>Discount</span>
-                    <span className="font-medium">-₹{savings.toLocaleString()}</span>
+                  <div className="flex justify-between">
+                    <span className="text-green-600">Discount</span>
+                    <span className="font-semibold text-green-600">-₹{savings.toLocaleString()}</span>
                   </div>
                 )}
                 <div className="flex justify-between">
                   <span className="text-gray-600">Shipping</span>
-                  <span className={shipping === 0 ? 'text-green-600 font-medium' : 'font-medium'}>
+                  <span className={shipping === 0 ? 'text-green-600 font-semibold' : 'font-semibold text-gray-900'}>
                     {shipping === 0 ? 'FREE' : `₹${shipping}`}
                   </span>
                 </div>
               </div>
 
-              <div className="flex justify-between py-4">
-                <span className="text-lg font-semibold text-gray-900">Total</span>
-                <span className="text-lg font-bold text-gray-900">₹{total.toLocaleString()}</span>
+              <div className="flex justify-between py-5 border-b border-gray-100">
+                <span className="text-lg font-display font-bold text-gray-900">Total</span>
+                <span className="text-xl font-bold bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent">₹{total.toLocaleString()}</span>
               </div>
 
-              <div className="flex items-center gap-2 text-sm text-gray-500 mt-4">
-                <Lock className="h-4 w-4" />
+              <div className="flex items-center gap-3 text-sm text-gray-500 mt-5 p-3 bg-gray-50 rounded-xl">
+                <Lock className="h-5 w-5 text-green-600" />
                 <span>Secure checkout powered by BYTEWISE</span>
               </div>
             </div>

@@ -94,21 +94,23 @@ export default function WishlistPage() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">My Wishlist</h1>
+    <div className="max-w-4xl mx-auto">
+      <h1 className="text-2xl font-display font-bold text-gray-900 mb-8">My Wishlist</h1>
 
       {items.length === 0 ? (
-        <div className="bg-white rounded-xl border p-8 text-center">
-          <Heart className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-12 text-center">
+          <div className="w-20 h-20 bg-gradient-to-br from-red-100 to-pink-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <Heart className="h-10 w-10 text-red-400" />
+          </div>
+          <h3 className="text-xl font-display font-bold text-gray-900 mb-2">
             Your wishlist is empty
           </h3>
-          <p className="text-gray-600 mb-4">
+          <p className="text-gray-500 mb-6">
             Save items you like by clicking the heart icon on products.
           </p>
           <Link
             href="/"
-            className="inline-flex items-center justify-center px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-primary-600 to-primary-700 text-white font-semibold rounded-xl shadow-lg shadow-primary-200 hover:from-primary-700 hover:to-primary-800 transition-all"
           >
             Browse Products
           </Link>
@@ -118,11 +120,11 @@ export default function WishlistPage() {
           {items.map((item) => (
             <div
               key={item.productId}
-              className="bg-white rounded-xl border overflow-hidden"
+              className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-shadow"
             >
-              <div className="flex items-center gap-4 p-4">
+              <div className="flex items-center gap-5 p-5">
                 {/* Product Image */}
-                <div className="w-24 h-24 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0">
+                <div className="w-24 h-24 bg-gray-100 rounded-xl flex items-center justify-center overflow-hidden flex-shrink-0">
                   {item.image ? (
                     <img
                       src={item.image}
@@ -138,24 +140,23 @@ export default function WishlistPage() {
                 <div className="flex-1 min-w-0">
                   <Link
                     href={`/products/${item.productId}`}
-                    className="font-medium text-gray-900 hover:text-blue-600 transition-colors line-clamp-2"
+                    className="font-semibold text-gray-900 hover:text-primary-600 transition-colors line-clamp-2"
                   >
                     {item.name}
                   </Link>
-                  <div className="flex items-center gap-2 mt-1">
+                  <div className="flex items-center gap-2 mt-2">
                     <span className="text-lg font-bold text-gray-900">
                       {formatCurrency(item.price)}
                     </span>
                     {item.originalPrice && item.originalPrice > item.price && (
                       <>
-                        <span className="text-sm text-gray-500 line-through">
+                        <span className="text-sm text-gray-400 line-through">
                           {formatCurrency(item.originalPrice)}
                         </span>
-                        <span className="text-sm text-green-600 font-medium">
+                        <span className="text-sm text-green-600 font-bold bg-green-50 px-2 py-0.5 rounded">
                           {Math.round(
                             ((item.originalPrice - item.price) / item.originalPrice) * 100
-                          )}
-                          % off
+                          )}% off
                         </span>
                       </>
                     )}
@@ -164,7 +165,7 @@ export default function WishlistPage() {
                     Added on {new Date(item.addedAt).toLocaleDateString()}
                   </p>
                   {!item.inStock && (
-                    <span className="inline-block mt-2 px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full">
+                    <span className="inline-block mt-2 px-3 py-1 bg-red-100 text-red-700 text-xs font-semibold rounded-full">
                       Out of Stock
                     </span>
                   )}
@@ -175,14 +176,14 @@ export default function WishlistPage() {
                   <button
                     onClick={() => addToCart(item.productId)}
                     disabled={!item.inStock}
-                    className="flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors text-sm"
+                    className="flex items-center justify-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary-600 to-primary-700 text-white font-semibold rounded-xl hover:from-primary-700 hover:to-primary-800 disabled:from-gray-300 disabled:to-gray-300 disabled:cursor-not-allowed transition-all text-sm shadow-lg shadow-primary-200 disabled:shadow-none"
                   >
                     <ShoppingCart className="h-4 w-4" />
                     Add to Cart
                   </button>
                   <button
                     onClick={() => removeFromWishlist(item.productId)}
-                    className="flex items-center justify-center gap-2 px-4 py-2 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 transition-colors text-sm"
+                    className="flex items-center justify-center gap-2 px-5 py-2.5 border-2 border-red-200 text-red-600 font-semibold rounded-xl hover:bg-red-50 transition-all text-sm"
                   >
                     <Trash2 className="h-4 w-4" />
                     Remove

@@ -31,13 +31,15 @@ export default function Header() {
   const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0)
 
   return (
-    <header className="sticky top-0 z-50 bg-white shadow-sm">
+    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-100/50">
       {/* Top Bar */}
-      <div className="bg-primary-900 text-white text-sm py-2">
+      <div className="bg-gradient-to-r from-primary-900 via-primary-800 to-primary-900 text-white text-sm py-2.5">
         <div className="container-custom flex items-center justify-between">
-          <p className="hidden sm:block">🚚 Free Delivery on orders above ₹999</p>
+          <p className="hidden sm:flex items-center gap-2">
+            <span className="animate-pulse">🚚</span> Free Delivery on orders above ₹999
+          </p>
           <div className="flex items-center gap-4 mx-auto sm:mx-0">
-            <Link href="/track-order" className="hover:text-primary-200 transition-colors">
+            <Link href="/track-order" className="hover:text-primary-200 transition-colors flex items-center gap-1">
               Track Order
             </Link>
             <span className="text-primary-400">|</span>
@@ -64,16 +66,16 @@ export default function Header() {
 
           {/* Search Bar - Desktop */}
           <div className="hidden md:flex flex-1 max-w-2xl mx-8">
-            <div className="relative w-full">
+            <div className="relative w-full group">
               <input
                 type="text"
                 placeholder="Search for TVs, Laptops, Phones and more..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 rounded-full border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-gray-50"
+                className="w-full pl-12 pr-28 py-3.5 rounded-full border-2 border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 bg-gray-50/50 hover:bg-white hover:border-gray-300 transition-all duration-200"
               />
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-              <button className="absolute right-2 top-1/2 -translate-y-1/2 bg-primary-600 text-white px-6 py-2 rounded-full hover:bg-primary-700 transition-colors text-sm font-medium">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 group-focus-within:text-primary-500 transition-colors" />
+              <button className="absolute right-1.5 top-1/2 -translate-y-1/2 bg-gradient-to-r from-primary-600 to-primary-700 text-white px-6 py-2.5 rounded-full hover:from-primary-700 hover:to-primary-800 transition-all text-sm font-medium shadow-md hover:shadow-lg">
                 Search
               </button>
             </div>
@@ -100,11 +102,11 @@ export default function Header() {
             {/* Cart */}
             <Link
               href="/cart"
-              className="p-2 hover:bg-gray-100 rounded-full transition-colors relative"
+              className="p-2.5 hover:bg-gray-100 rounded-full transition-all duration-200 relative group"
             >
-              <ShoppingCart className="h-5 w-5 text-gray-600" />
+              <ShoppingCart className="h-5 w-5 text-gray-600 group-hover:text-primary-600 transition-colors" />
               {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary-600 text-white text-xs rounded-full flex items-center justify-center font-medium">
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-r from-primary-600 to-primary-700 text-white text-xs rounded-full flex items-center justify-center font-bold shadow-md animate-pulse">
                   {cartCount}
                 </span>
               )}

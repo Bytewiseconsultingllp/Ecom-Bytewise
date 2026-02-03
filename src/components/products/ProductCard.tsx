@@ -60,22 +60,25 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   return (
     <Link href={`/products/${product.id}`} className="group">
-      <div className="card h-full flex flex-col">
+      <div className="card h-full flex flex-col hover-lift">
         {/* Image Container */}
-        <div className="relative aspect-square overflow-hidden bg-gray-100">
+        <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100">
           <img
             src={product.image}
             alt={product.name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ease-out"
           />
+          
+          {/* Overlay on hover */}
+          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300" />
           
           {/* Badge */}
           {product.badge && (
-            <span className={`absolute top-3 left-3 px-2 py-1 rounded-full text-xs font-medium ${
-              product.badge === 'Bestseller' ? 'bg-yellow-400 text-yellow-900' :
-              product.badge === 'New' ? 'bg-green-500 text-white' :
-              product.badge === 'Hot' ? 'bg-red-500 text-white' :
-              'bg-primary-600 text-white'
+            <span className={`absolute top-3 left-3 px-3 py-1.5 rounded-full text-xs font-semibold shadow-lg backdrop-blur-sm ${
+              product.badge === 'Bestseller' ? 'bg-gradient-to-r from-yellow-400 to-amber-500 text-yellow-900' :
+              product.badge === 'New' ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white' :
+              product.badge === 'Hot' ? 'bg-gradient-to-r from-red-500 to-rose-600 text-white' :
+              'bg-gradient-to-r from-primary-600 to-primary-700 text-white'
             }`}>
               {product.badge}
             </span>
@@ -83,7 +86,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           
           {/* Discount Badge */}
           {discount > 0 && (
-            <span className="absolute top-3 right-3 bg-primary-600 text-white px-2 py-1 rounded-full text-xs font-medium">
+            <span className="absolute top-3 right-3 bg-gradient-to-r from-primary-600 to-primary-700 text-white px-2.5 py-1.5 rounded-full text-xs font-bold shadow-lg">
               {discount}% OFF
             </span>
           )}
@@ -91,7 +94,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           {/* Wishlist Button */}
           <button
             onClick={handleToggleWishlist}
-            className={`absolute bottom-3 right-3 w-10 h-10 rounded-full shadow-lg flex items-center justify-center transition-all ${
+            className={`absolute bottom-3 right-3 w-10 h-10 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 transform hover:scale-110 ${
               inWishlist 
                 ? 'bg-red-500 text-white' 
                 : 'bg-white text-gray-600 hover:bg-gray-100'
@@ -104,8 +107,8 @@ export default function ProductCard({ product }: ProductCardProps) {
         {/* Content */}
         <div className="p-4 flex-1 flex flex-col">
           {/* Rating */}
-          <div className="flex items-center gap-1 mb-2">
-            <div className="flex items-center gap-0.5">
+          <div className="flex items-center gap-1.5 mb-2">
+            <div className="flex items-center gap-0.5 bg-yellow-50 px-2 py-0.5 rounded-md">
               {[...Array(5)].map((_, i) => (
                 <Star
                   key={i}

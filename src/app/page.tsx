@@ -132,21 +132,22 @@ export default function HomePage() {
       <section className="relative bg-gradient-to-br from-primary-900 via-primary-800 to-primary-900 text-white overflow-hidden">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
         <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-primary-600/30 to-transparent"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-accent-500/10 rounded-full blur-3xl"></div>
         
-        <div className="container-custom relative z-10 py-16 md:py-24">
+        <div className="container-custom relative z-10 py-20 md:py-28">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="animate-fade-in">
-              <div className="inline-flex items-center gap-2 bg-white/10 rounded-full px-4 py-2 mb-6">
-                <Sparkles className="h-4 w-4 text-yellow-400" />
-                <span className="text-sm">New Year Sale - Up to 40% Off!</span>
+              <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-5 py-2.5 mb-8 border border-white/20">
+                <Sparkles className="h-5 w-5 text-yellow-400" />
+                <span className="text-sm font-medium">New Year Sale - Up to 40% Off!</span>
               </div>
               
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold leading-tight mb-6">
                 Premium Electronics
-                <span className="block text-primary-300">at Unbeatable Prices</span>
+                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-primary-200 to-accent-300">at Unbeatable Prices</span>
               </h1>
               
-              <p className="text-lg text-primary-100 mb-8 max-w-xl">
+              <p className="text-lg text-primary-100 mb-10 max-w-xl leading-relaxed">
                 Discover the latest TVs, laptops, smartphones, and more. 
                 Shop with confidence with our genuine product guarantee and 
                 hassle-free returns.
@@ -155,29 +156,31 @@ export default function HomePage() {
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link
                   href="/products"
-                  className="btn-primary bg-white text-primary-900 hover:bg-gray-100 flex items-center justify-center gap-2"
+                  className="btn-primary bg-white text-primary-900 hover:bg-gray-100 flex items-center justify-center gap-2 shadow-xl hover:shadow-2xl transition-all"
                 >
                   Shop Now
                   <ArrowRight className="h-5 w-5" />
                 </Link>
                 <Link
                   href="/deals"
-                  className="btn-outline border-white text-white hover:bg-white hover:text-primary-900 flex items-center justify-center"
+                  className="btn-outline border-white text-white hover:bg-white hover:text-primary-900 flex items-center justify-center backdrop-blur-sm"
                 >
                   View Deals
                 </Link>
               </div>
               
-              <div className="flex items-center gap-8 mt-10 pt-10 border-t border-white/20">
-                <div>
+              <div className="flex items-center gap-8 mt-12 pt-10 border-t border-white/20">
+                <div className="text-center">
                   <p className="text-3xl font-bold">50K+</p>
                   <p className="text-sm text-primary-200">Happy Customers</p>
                 </div>
-                <div>
+                <div className="w-px h-12 bg-white/20"></div>
+                <div className="text-center">
                   <p className="text-3xl font-bold">1000+</p>
                   <p className="text-sm text-primary-200">Products</p>
                 </div>
-                <div>
+                <div className="w-px h-12 bg-white/20"></div>
+                <div className="text-center">
                   <p className="text-3xl font-bold">4.8★</p>
                   <p className="text-sm text-primary-200">Rating</p>
                 </div>
@@ -185,15 +188,15 @@ export default function HomePage() {
             </div>
             
             <div className="hidden lg:block relative">
-              <div className="absolute -top-10 -left-10 w-72 h-72 bg-primary-500/30 rounded-full blur-3xl"></div>
-              <div className="absolute -bottom-10 -right-10 w-72 h-72 bg-accent-500/20 rounded-full blur-3xl"></div>
-              <div className="relative bg-white/10 backdrop-blur-sm rounded-3xl p-8 border border-white/20">
+              <div className="absolute -top-10 -left-10 w-72 h-72 bg-primary-500/30 rounded-full blur-3xl animate-pulse"></div>
+              <div className="absolute -bottom-10 -right-10 w-72 h-72 bg-accent-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+              <div className="relative bg-white/10 backdrop-blur-sm rounded-3xl p-8 border border-white/20 animate-float">
                 <img
                   src="https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=600"
                   alt="Featured TV"
                   className="w-full h-auto rounded-2xl shadow-2xl"
                 />
-                <div className="absolute -bottom-4 -right-4 bg-white rounded-2xl p-4 shadow-xl">
+                <div className="absolute -bottom-4 -right-4 bg-white rounded-2xl p-4 shadow-xl hover-lift">
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
                       <Truck className="h-6 w-6 text-green-600" />
@@ -211,39 +214,39 @@ export default function HomePage() {
       </section>
 
       {/* Features Section */}
-      <section className="py-12 bg-white border-b">
+      <section className="py-14 bg-white border-b">
         <div className="container-custom">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            <div className="flex items-center gap-4 p-4">
-              <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                <Truck className="h-6 w-6 text-primary-600" />
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+            <div className="flex items-center gap-4 p-5 rounded-2xl hover:bg-primary-50 transition-colors group cursor-pointer">
+              <div className="w-14 h-14 bg-primary-100 rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:bg-primary-200 group-hover:scale-110 transition-all">
+                <Truck className="h-7 w-7 text-primary-600" />
               </div>
               <div>
                 <h3 className="font-semibold text-gray-900">Free Shipping</h3>
                 <p className="text-sm text-gray-500">On orders ₹999+</p>
               </div>
             </div>
-            <div className="flex items-center gap-4 p-4">
-              <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                <Shield className="h-6 w-6 text-green-600" />
+            <div className="flex items-center gap-4 p-5 rounded-2xl hover:bg-green-50 transition-colors group cursor-pointer">
+              <div className="w-14 h-14 bg-green-100 rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:bg-green-200 group-hover:scale-110 transition-all">
+                <Shield className="h-7 w-7 text-green-600" />
               </div>
               <div>
                 <h3 className="font-semibold text-gray-900">Genuine Products</h3>
                 <p className="text-sm text-gray-500">100% authentic</p>
               </div>
             </div>
-            <div className="flex items-center gap-4 p-4">
-              <div className="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                <Zap className="h-6 w-6 text-yellow-600" />
+            <div className="flex items-center gap-4 p-5 rounded-2xl hover:bg-yellow-50 transition-colors group cursor-pointer">
+              <div className="w-14 h-14 bg-yellow-100 rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:bg-yellow-200 group-hover:scale-110 transition-all">
+                <Zap className="h-7 w-7 text-yellow-600" />
               </div>
               <div>
                 <h3 className="font-semibold text-gray-900">Easy Returns</h3>
                 <p className="text-sm text-gray-500">7-day returns</p>
               </div>
             </div>
-            <div className="flex items-center gap-4 p-4">
-              <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                <HeadphonesIcon className="h-6 w-6 text-purple-600" />
+            <div className="flex items-center gap-4 p-5 rounded-2xl hover:bg-purple-50 transition-colors group cursor-pointer">
+              <div className="w-14 h-14 bg-purple-100 rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:bg-purple-200 group-hover:scale-110 transition-all">
+                <HeadphonesIcon className="h-7 w-7 text-purple-600" />
               </div>
               <div>
                 <h3 className="font-semibold text-gray-900">24/7 Support</h3>
@@ -307,20 +310,23 @@ export default function HomePage() {
       </section>
 
       {/* Promo Banner */}
-      <section className="py-12 bg-gradient-to-r from-primary-600 to-primary-800 text-white">
-        <div className="container-custom">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+      <section className="py-14 bg-gradient-to-r from-primary-600 via-primary-700 to-primary-800 text-white relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
+        <div className="absolute -top-20 -right-20 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
+        <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
+        <div className="container-custom relative z-10">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-8">
             <div>
-              <h2 className="text-2xl md:text-3xl font-display font-bold mb-2">
+              <h2 className="text-2xl md:text-4xl font-display font-bold mb-3">
                 New Year Special Offer! 🎉
               </h2>
-              <p className="text-primary-100">
+              <p className="text-primary-100 text-lg">
                 Get up to 40% off on selected electronics. Limited time only!
               </p>
             </div>
             <Link
               href="/deals"
-              className="btn bg-white text-primary-700 hover:bg-gray-100 flex items-center gap-2 whitespace-nowrap"
+              className="btn bg-white text-primary-700 hover:bg-gray-100 flex items-center gap-2 whitespace-nowrap shadow-xl hover:shadow-2xl transition-all px-8 py-4 text-lg font-semibold"
             >
               Shop Deals <ArrowRight className="h-5 w-5" />
             </Link>
@@ -349,26 +355,31 @@ export default function HomePage() {
       {/* Newsletter Section */}
       <section className="section bg-white">
         <div className="container-custom">
-          <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl p-8 md:p-12 text-center">
-            <h2 className="text-2xl md:text-3xl font-display font-bold text-white mb-4">
-              Stay Updated
-            </h2>
-            <p className="text-gray-300 mb-8 max-w-xl mx-auto">
-              Subscribe to our newsletter for exclusive deals, new arrivals, and tech updates.
-            </p>
-            <form className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="flex-1 px-6 py-3 rounded-full bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500"
-              />
-              <button
-                type="submit"
-                className="px-8 py-3 bg-primary-600 text-white rounded-full font-medium hover:bg-primary-700 transition-colors"
-              >
-                Subscribe
-              </button>
-            </form>
+          <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-3xl p-10 md:p-16 text-center relative overflow-hidden">
+            <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-5"></div>
+            <div className="absolute -top-20 -right-20 w-64 h-64 bg-primary-500/20 rounded-full blur-3xl"></div>
+            <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-accent-500/20 rounded-full blur-3xl"></div>
+            <div className="relative z-10">
+              <h2 className="text-3xl md:text-4xl font-display font-bold text-white mb-4">
+                Stay Updated
+              </h2>
+              <p className="text-gray-300 mb-10 max-w-xl mx-auto text-lg">
+                Subscribe to our newsletter for exclusive deals, new arrivals, and tech updates.
+              </p>
+              <form className="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto">
+                <input
+                  type="email"
+                  placeholder="Enter your email"
+                  className="flex-1 px-6 py-4 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent backdrop-blur-sm"
+                />
+                <button
+                  type="submit"
+                  className="px-8 py-4 bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-xl font-semibold hover:from-primary-700 hover:to-primary-800 transition-all shadow-lg hover:shadow-xl"
+                >
+                  Subscribe
+                </button>
+              </form>
+            </div>
           </div>
         </div>
       </section>

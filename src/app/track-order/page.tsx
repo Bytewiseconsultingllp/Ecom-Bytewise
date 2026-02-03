@@ -81,123 +81,129 @@ export default function TrackOrderPage() {
     switch (status.toLowerCase()) {
       case "pending":
       case "processing":
-        return "bg-yellow-100 text-yellow-800";
+        return "bg-yellow-100 text-yellow-800 border-yellow-200";
       case "shipped":
       case "in transit":
-        return "bg-blue-100 text-blue-800";
+        return "bg-blue-100 text-blue-800 border-blue-200";
       case "delivered":
-        return "bg-green-100 text-green-800";
+        return "bg-green-100 text-green-800 border-green-200";
       case "cancelled":
-        return "bg-red-100 text-red-800";
+        return "bg-red-100 text-red-800 border-red-200";
       default:
-        return "bg-gray-100 text-gray-800";
+        return "bg-gray-100 text-gray-800 border-gray-200";
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-3xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <div className="flex justify-center mb-4">
-            <Package className="w-16 h-16 text-blue-600" />
+    <div className="min-h-screen">
+      {/* Hero Section */}
+      <div className="bg-gradient-to-br from-primary-900 via-primary-800 to-primary-900 text-white py-16">
+        <div className="container-custom text-center">
+          <div className="flex justify-center mb-6">
+            <div className="w-20 h-20 bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center">
+              <Package className="w-10 h-10" />
+            </div>
           </div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Track Your Order</h1>
-          <p className="text-lg text-gray-600">
-            Enter your order details to track your shipment
+          <h1 className="text-4xl md:text-5xl font-display font-bold mb-4">Track Your Order</h1>
+          <p className="text-lg text-primary-100 max-w-xl mx-auto">
+            Enter your order details to get real-time tracking information
           </p>
         </div>
+      </div>
+
+      <div className="container-custom py-12">
+        <div className="max-w-3xl mx-auto">
 
         {/* Track Order Form */}
-        <div className="bg-white rounded-lg shadow-md p-8 mb-8">
-          <form onSubmit={handleTrackOrder} className="space-y-6">
-            <div>
-              <label htmlFor="orderId" className="block text-sm font-medium text-gray-700 mb-2">
-                Order ID
-              </label>
-              <input
-                type="text"
-                id="orderId"
-                value={orderId}
-                onChange={(e) => setOrderId(e.target.value)}
-                placeholder="e.g., BW-ORD-20260202-ABC123"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                required
-              />
-            </div>
-
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                Email Address
-              </label>
-              <input
-                type="email"
-                id="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="your.email@example.com"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                required
-              />
-            </div>
-
-            {error && (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                <p className="text-red-800 text-sm">{error}</p>
-              </div>
-            )}
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
-            >
-              <Search className="w-5 h-5" />
-              {loading ? "Tracking..." : "Track Order"}
-            </button>
-          </form>
-        </div>
-
-        {/* Order Details */}
-        {orderDetails && (
-          <div className="space-y-6">
-            {/* Order Summary */}
-            <div className="bg-white rounded-lg shadow-md p-8">
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h2 className="text-2xl font-semibold text-gray-900">
-                    Order {orderDetails.orderId}
-                  </h2>
-                  <p className="text-gray-600 mt-1">{orderDetails.email}</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  {getStatusIcon(orderDetails.status)}
-                  <span
-                    className={`px-4 py-2 rounded-full text-sm font-semibold ${getStatusColor(
-                      orderDetails.status
-                    )}`}
-                  >
-                    {orderDetails.status}
-                  </span>
-                </div>
+          <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 hover-lift">
+            <form onSubmit={handleTrackOrder} className="space-y-6">
+              <div>
+                <label htmlFor="orderId" className="block text-sm font-semibold text-gray-700 mb-2">
+                  Order ID
+                </label>
+                <input
+                  type="text"
+                  id="orderId"
+                  value={orderId}
+                  onChange={(e) => setOrderId(e.target.value)}
+                  placeholder="e.g., BW-ORD-20260202-ABC123"
+                  className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all"
+                  required
+                />
               </div>
 
-              {orderDetails.trackingNumber && (
-                <div className="mb-6 p-4 bg-blue-50 rounded-lg">
-                  <p className="text-sm text-gray-700">
-                    <span className="font-semibold">Tracking Number:</span>{" "}
-                    {orderDetails.trackingNumber}
-                  </p>
+              <div>
+                <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="your.email@example.com"
+                  className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all"
+                  required
+                />
+              </div>
+
+              {error && (
+                <div className="bg-red-50 border border-red-200 rounded-xl p-4">
+                  <p className="text-red-700 text-sm font-medium">{error}</p>
                 </div>
               )}
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">Shipping Address</h3>
-                  <p className="text-gray-600">{orderDetails.shippingAddress}</p>
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-xl hover:from-primary-700 hover:to-primary-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all font-semibold shadow-lg hover:shadow-xl"
+              >
+                <Search className="w-5 h-5" />
+                {loading ? "Tracking..." : "Track Order"}
+              </button>
+            </form>
+          </div>
+
+        {/* Order Details */}
+          {orderDetails && (
+            <div className="space-y-6">
+              {/* Order Summary */}
+              <div className="bg-white rounded-2xl shadow-lg p-8 hover-lift">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                  <div>
+                    <h2 className="text-2xl font-display font-bold text-gray-900">
+                      Order {orderDetails.orderId}
+                    </h2>
+                    <p className="text-gray-500 mt-1">{orderDetails.email}</p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    {getStatusIcon(orderDetails.status)}
+                    <span
+                      className={`px-4 py-2 rounded-xl text-sm font-bold border ${getStatusColor(
+                        orderDetails.status
+                      )}`}
+                    >
+                      {orderDetails.status}
+                    </span>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">Estimated Delivery</h3>
+
+                {orderDetails.trackingNumber && (
+                  <div className="mb-6 p-4 bg-gradient-to-r from-primary-50 to-blue-50 rounded-xl border border-primary-100">
+                    <p className="text-sm text-gray-700">
+                      <span className="font-bold">Tracking Number:</span>{" "}
+                      <span className="font-mono text-primary-700">{orderDetails.trackingNumber}</span>
+                    </p>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                  <div className="p-4 rounded-xl bg-gray-50">
+                    <h3 className="font-bold text-gray-900 mb-2">Shipping Address</h3>
+                    <p className="text-gray-600">{orderDetails.shippingAddress}</p>
+                  </div>
+                  <div className="p-4 rounded-xl bg-gray-50">
+                    <h3 className="font-bold text-gray-900 mb-2">Estimated Delivery</h3>
                   <p className="text-gray-600">{orderDetails.estimatedDelivery}</p>
                 </div>
               </div>
@@ -276,6 +282,7 @@ export default function TrackOrderPage() {
             </div>
           </div>
         )}
+        </div>
       </div>
     </div>
   );

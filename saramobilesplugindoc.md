@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useCallback, useEffect, Suspense } from "react"
 import { 
   Book, 
   Code, 
@@ -17,11 +17,21 @@ import {
   ExternalLink,
   Terminal,
   FileJson,
-  AlertCircle
+  AlertCircle,
+  Play,
+  Loader2,
+  Globe,
+  CreditCard,
+  RefreshCw,
+  CheckCircle,
+  XCircle,
+  Settings
 } from "lucide-react"
 import Link from "next/link"
+import { useSearchParams } from "next/navigation"
+import { toast, Toaster } from "react-hot-toast"
 
-type TabId = 'overview' | 'authentication' | 'products' | 'orders' | 'wallet' | 'errors' | 'sdks';
+type TabId = 'overview' | 'authentication' | 'products' | 'orders' | 'wallet' | 'errors' | 'sdks' | 'playground' | 'integration-modes';
 
 interface CodeBlockProps {
   code: string;
@@ -109,21 +119,494 @@ function EndpointCard({ method, path, description, children }: EndpointCardProps
   )
 }
 
+// API Playground Component
+interface APIPlaygroundProps {
+  apiKey: string;
+  baseUrl: string;
+}
+
+function APIPlayground({ apiKey, baseUrl }: APIPlaygroundProps) {
+  const [selectedEndpoint, setSelectedEndpoint] = useState<string>('products-list')
+  const [isLoading, setIsLoading] = useState(false)
+  const [response, setResponse] = useState<any>(null)
+  const [error, setError] = useState<string | null>(null)
+  
+  // Form states for different endpoints
+  const [productSearchQuery, setProductSearchQuery] = useState('')
+  const [productCategory, setProductCategory] = useState('')
+  const [productLimit, setProductLimit] = useState('10')
+  
+  // Order form states
+  const [orderCustomerName, setOrderCustomerName] = useState('')
+  const [orderCustomerEmail, setOrderCustomerEmail] = useState('')
+  const [orderCustomerPhone, setOrderCustomerPhone] = useState('')
+  const [orderAddressLine1, setOrderAddressLine1] = useState('')
+  const [orderAddressCity, setOrderAddressCity] = useState('')
+  const [orderAddressState, setOrderAddressState] = useState('')
+  const [orderAddressPincode, setOrderAddressPincode] = useState('')
+  const [orderItems, setOrderItems] = useState<Array<{productId: string, quantity: number}>>([{productId: '', quantity: 1}])
+  const [orderPaymentMethod, setOrderPaymentMethod] = useState<'prepaid' | 'cod'>('prepaid')
+  const [orderPartnerOrderId, setOrderPartnerOrderId] = useState('')
+
+  const endpoints = [
+    { id: 'products-list', name: 'List Products', method: 'GET', path: '/products' },
+    { id: 'products-detail', name: 'Get Product', method: 'GET', path: '/products/{id}' },
+    { id: 'products-stock', name: 'Check Stock', method: 'POST', path: '/products/stock-check' },
+    { id: 'orders-create', name: 'Create Order', method: 'POST', path: '/orders' },
+    { id: 'orders-list', name: 'List Orders', method: 'GET', path: '/orders' },
+    { id: 'wallet-balance', name: 'Get Wallet Balance', method: 'GET', path: '/wallet/balance' },
+    { id: 'wallet-transactions', name: 'Get Transactions', method: 'GET', path: '/wallet/transactions' },
+  ]
+
+  const executeRequest = async () => {
+    if (!apiKey) {
+      toast.error('Please enter your API key first')
+      return
+    }
+
+    setIsLoading(true)
+    setError(null)
+    setResponse(null)
+
+    try {
+      let url = baseUrl
+      let method = 'GET'
+      let body: any = null
+
+      switch (selectedEndpoint) {
+        case 'products-list':
+          url += `/products?limit=${productLimit}`
+          if (productSearchQuery) url += `&search=${encodeURIComponent(productSearchQuery)}`
+          if (productCategory) url += `&category=${encodeURIComponent(productCategory)}`
+          break
+        case 'products-stock':
+          url += '/products/stock-check'
+          method = 'POST'
+          body = { productIds: orderItems.filter(i => i.productId).map(i => i.productId) }
+          break
+        case 'orders-create':
+          url += '/orders'
+          method = 'POST'
+          body = {
+            customer: {
+              name: orderCustomerName,
+              email: orderCustomerEmail,
+              phone: orderCustomerPhone,
+              address: {
+                line1: orderAddressLine1,
+                city: orderAddressCity,
+                state: orderAddressState,
+                pincode: orderAddressPincode,
+                country: 'India'
+              }
+            },
+            items: orderItems.filter(i => i.productId),
+            paymentMethod: orderPaymentMethod,
+            partnerOrderId: orderPartnerOrderId || undefined
+          }
+          break
+        case 'orders-list':
+          url += '/orders?limit=10'
+          break
+        case 'wallet-balance':
+          url += '/wallet/balance'
+          break
+        case 'wallet-transactions':
+          url += '/wallet/transactions?limit=10'
+          break
+        default:
+          throw new Error('Unknown endpoint')
+      }
+
+      const fetchOptions: RequestInit = {
+        method,
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+        },
+      }
+
+      if (body) {
+        fetchOptions.body = JSON.stringify(body)
+      }
+
+      const res = await fetch(url, fetchOptions)
+      const data = await res.json()
+
+      setResponse(data)
+      
+      if (!res.ok) {
+        setError(`HTTP ${res.status}: ${data.error?.message || 'Request failed'}`)
+      }
+    } catch (err: any) {
+      setError(err.message || 'Failed to execute request')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const addOrderItem = () => {
+    setOrderItems([...orderItems, { productId: '', quantity: 1 }])
+  }
+
+  const removeOrderItem = (index: number) => {
+    setOrderItems(orderItems.filter((_, i) => i !== index))
+  }
+
+  const updateOrderItem = (index: number, field: 'productId' | 'quantity', value: string | number) => {
+    const updated = [...orderItems]
+    updated[index] = { ...updated[index], [field]: value }
+    setOrderItems(updated)
+  }
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Request Panel */}
+      <div className="space-y-4">
+        <h4 className="font-semibold text-gray-900">Request</h4>
+        
+        {/* Endpoint Selection */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Endpoint</label>
+          <select
+            value={selectedEndpoint}
+            onChange={(e) => { setSelectedEndpoint(e.target.value); setResponse(null); setError(null); }}
+            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+          >
+            <optgroup label="Products">
+              <option value="products-list">GET /products - List Products</option>
+              <option value="products-stock">POST /products/stock-check - Check Stock</option>
+            </optgroup>
+            <optgroup label="Orders">
+              <option value="orders-create">POST /orders - Create Order</option>
+              <option value="orders-list">GET /orders - List Orders</option>
+            </optgroup>
+            <optgroup label="Wallet">
+              <option value="wallet-balance">GET /wallet/balance - Get Balance</option>
+              <option value="wallet-transactions">GET /wallet/transactions - Get Transactions</option>
+            </optgroup>
+          </select>
+        </div>
+
+        {/* Products List Form */}
+        {selectedEndpoint === 'products-list' && (
+          <div className="space-y-3 p-4 bg-gray-50 rounded-lg">
+            <h5 className="text-sm font-medium text-gray-700">Query Parameters</h5>
+            <div>
+              <label className="block text-xs text-gray-600 mb-1">Search</label>
+              <input
+                type="text"
+                value={productSearchQuery}
+                onChange={(e) => setProductSearchQuery(e.target.value)}
+                placeholder="Search products..."
+                className="w-full px-3 py-2 border rounded-lg text-sm"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs text-gray-600 mb-1">Category</label>
+                <input
+                  type="text"
+                  value={productCategory}
+                  onChange={(e) => setProductCategory(e.target.value)}
+                  placeholder="e.g., televisions"
+                  className="w-full px-3 py-2 border rounded-lg text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-gray-600 mb-1">Limit</label>
+                <input
+                  type="number"
+                  value={productLimit}
+                  onChange={(e) => setProductLimit(e.target.value)}
+                  min="1"
+                  max="100"
+                  className="w-full px-3 py-2 border rounded-lg text-sm"
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Stock Check Form */}
+        {selectedEndpoint === 'products-stock' && (
+          <div className="space-y-3 p-4 bg-gray-50 rounded-lg">
+            <h5 className="text-sm font-medium text-gray-700">Product IDs to Check</h5>
+            {orderItems.map((item, index) => (
+              <div key={index} className="flex gap-2">
+                <input
+                  type="text"
+                  value={item.productId}
+                  onChange={(e) => updateOrderItem(index, 'productId', e.target.value)}
+                  placeholder="Product ID"
+                  className="flex-1 px-3 py-2 border rounded-lg text-sm font-mono"
+                />
+                {orderItems.length > 1 && (
+                  <button
+                    onClick={() => removeOrderItem(index)}
+                    className="px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg"
+                  >
+                    <XCircle className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
+            ))}
+            <button
+              onClick={addOrderItem}
+              className="text-sm text-blue-600 hover:text-blue-700"
+            >
+              + Add another product
+            </button>
+          </div>
+        )}
+
+        {/* Create Order Form */}
+        {selectedEndpoint === 'orders-create' && (
+          <div className="space-y-4 p-4 bg-gray-50 rounded-lg max-h-96 overflow-y-auto">
+            <h5 className="text-sm font-medium text-gray-700">Customer Information</h5>
+            <div className="grid grid-cols-1 gap-3">
+              <input
+                type="text"
+                value={orderCustomerName}
+                onChange={(e) => setOrderCustomerName(e.target.value)}
+                placeholder="Customer Name *"
+                className="px-3 py-2 border rounded-lg text-sm"
+              />
+              <div className="grid grid-cols-2 gap-3">
+                <input
+                  type="email"
+                  value={orderCustomerEmail}
+                  onChange={(e) => setOrderCustomerEmail(e.target.value)}
+                  placeholder="Email *"
+                  className="px-3 py-2 border rounded-lg text-sm"
+                />
+                <input
+                  type="tel"
+                  value={orderCustomerPhone}
+                  onChange={(e) => setOrderCustomerPhone(e.target.value)}
+                  placeholder="Phone *"
+                  className="px-3 py-2 border rounded-lg text-sm"
+                />
+              </div>
+            </div>
+
+            <h5 className="text-sm font-medium text-gray-700 pt-2">Delivery Address</h5>
+            <div className="space-y-3">
+              <input
+                type="text"
+                value={orderAddressLine1}
+                onChange={(e) => setOrderAddressLine1(e.target.value)}
+                placeholder="Address Line 1 *"
+                className="w-full px-3 py-2 border rounded-lg text-sm"
+              />
+              <div className="grid grid-cols-3 gap-3">
+                <input
+                  type="text"
+                  value={orderAddressCity}
+                  onChange={(e) => setOrderAddressCity(e.target.value)}
+                  placeholder="City *"
+                  className="px-3 py-2 border rounded-lg text-sm"
+                />
+                <input
+                  type="text"
+                  value={orderAddressState}
+                  onChange={(e) => setOrderAddressState(e.target.value)}
+                  placeholder="State *"
+                  className="px-3 py-2 border rounded-lg text-sm"
+                />
+                <input
+                  type="text"
+                  value={orderAddressPincode}
+                  onChange={(e) => setOrderAddressPincode(e.target.value)}
+                  placeholder="Pincode *"
+                  className="px-3 py-2 border rounded-lg text-sm"
+                />
+              </div>
+            </div>
+
+            <h5 className="text-sm font-medium text-gray-700 pt-2">Order Items</h5>
+            {orderItems.map((item, index) => (
+              <div key={index} className="flex gap-2">
+                <input
+                  type="text"
+                  value={item.productId}
+                  onChange={(e) => updateOrderItem(index, 'productId', e.target.value)}
+                  placeholder="Product ID *"
+                  className="flex-1 px-3 py-2 border rounded-lg text-sm font-mono"
+                />
+                <input
+                  type="number"
+                  value={item.quantity}
+                  onChange={(e) => updateOrderItem(index, 'quantity', parseInt(e.target.value) || 1)}
+                  min="1"
+                  placeholder="Qty"
+                  className="w-20 px-3 py-2 border rounded-lg text-sm"
+                />
+                {orderItems.length > 1 && (
+                  <button
+                    onClick={() => removeOrderItem(index)}
+                    className="px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg"
+                  >
+                    <XCircle className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
+            ))}
+            <button
+              onClick={addOrderItem}
+              className="text-sm text-blue-600 hover:text-blue-700"
+            >
+              + Add another item
+            </button>
+
+            <h5 className="text-sm font-medium text-gray-700 pt-2">Payment & Reference</h5>
+            <div className="grid grid-cols-2 gap-3">
+              <select
+                value={orderPaymentMethod}
+                onChange={(e) => setOrderPaymentMethod(e.target.value as 'prepaid' | 'cod')}
+                className="px-3 py-2 border rounded-lg text-sm"
+              >
+                <option value="prepaid">Prepaid</option>
+                <option value="cod">Cash on Delivery</option>
+              </select>
+              <input
+                type="text"
+                value={orderPartnerOrderId}
+                onChange={(e) => setOrderPartnerOrderId(e.target.value)}
+                placeholder="Your Order ID (optional)"
+                className="px-3 py-2 border rounded-lg text-sm"
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Execute Button */}
+        <button
+          onClick={executeRequest}
+          disabled={isLoading || !apiKey}
+          className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isLoading ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Executing...
+            </>
+          ) : (
+            <>
+              <Play className="h-4 w-4" />
+              Send Request
+            </>
+          )}
+        </button>
+      </div>
+
+      {/* Response Panel */}
+      <div className="space-y-4">
+        <h4 className="font-semibold text-gray-900">Response</h4>
+        
+        {!response && !error && (
+          <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center text-gray-500">
+            <div className="text-center">
+              <Terminal className="h-8 w-8 mx-auto mb-2" />
+              <p className="text-sm">Response will appear here</p>
+            </div>
+          </div>
+        )}
+
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+            <div className="flex items-center gap-2 text-red-800 font-medium mb-2">
+              <XCircle className="h-4 w-4" />
+              Error
+            </div>
+            <p className="text-sm text-red-700">{error}</p>
+          </div>
+        )}
+
+        {response && (
+          <div className="bg-gray-900 rounded-lg overflow-hidden">
+            <div className="flex items-center justify-between px-4 py-2 bg-gray-800">
+              <span className="text-sm text-gray-400">
+                {response.success ? (
+                  <span className="text-green-400 flex items-center gap-1">
+                    <CheckCircle className="h-4 w-4" /> Success
+                  </span>
+                ) : (
+                  <span className="text-red-400 flex items-center gap-1">
+                    <XCircle className="h-4 w-4" /> Failed
+                  </span>
+                )}
+              </span>
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(JSON.stringify(response, null, 2))
+                  toast.success('Copied to clipboard')
+                }}
+                className="text-xs text-gray-400 hover:text-white flex items-center gap-1"
+              >
+                <Copy className="h-3 w-3" />
+                Copy
+              </button>
+            </div>
+            <pre className="p-4 overflow-auto max-h-96 text-sm">
+              <code className="text-gray-100">
+                {JSON.stringify(response, null, 2)}
+              </code>
+            </pre>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
 export default function PartnerAPIDocsPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto text-blue-600 mb-4" />
+          <p className="text-gray-600">Loading API Documentation...</p>
+        </div>
+      </div>
+    }>
+      <PartnerAPIDocsContent />
+    </Suspense>
+  )
+}
+
+function PartnerAPIDocsContent() {
+  const searchParams = useSearchParams()
   const [activeTab, setActiveTab] = useState<TabId>('overview')
+  const [apiKey, setApiKey] = useState('')
+  const [showApiKey, setShowApiKey] = useState(false)
+  const baseUrl = typeof window !== 'undefined' ? `${window.location.origin}/api/v1/partner` : '/api/v1/partner'
+
+  // Set tab from URL params on load
+  useEffect(() => {
+    const tabParam = searchParams.get('tab') as TabId | null
+    const validTabs: TabId[] = ['overview', 'integration-modes', 'authentication', 'products', 'orders', 'wallet', 'playground', 'errors', 'sdks']
+    if (tabParam && validTabs.includes(tabParam)) {
+      setActiveTab(tabParam)
+    }
+  }, [searchParams])
 
   const tabs: { id: TabId; label: string; icon: React.ReactNode }[] = [
     { id: 'overview', label: 'Overview', icon: <Book className="h-4 w-4" /> },
+    { id: 'integration-modes', label: 'Integration Modes', icon: <Settings className="h-4 w-4" /> },
     { id: 'authentication', label: 'Authentication', icon: <Key className="h-4 w-4" /> },
     { id: 'products', label: 'Products API', icon: <Package className="h-4 w-4" /> },
     { id: 'orders', label: 'Orders API', icon: <ShoppingCart className="h-4 w-4" /> },
     { id: 'wallet', label: 'Wallet API', icon: <Wallet className="h-4 w-4" /> },
+    { id: 'playground', label: 'API Playground', icon: <Play className="h-4 w-4" /> },
     { id: 'errors', label: 'Error Handling', icon: <AlertCircle className="h-4 w-4" /> },
     { id: 'sdks', label: 'SDKs & Libraries', icon: <Code className="h-4 w-4" /> },
   ]
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <Toaster position="top-right" />
+      
       {/* Header */}
       <header className="bg-white border-b sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -138,6 +621,31 @@ export default function PartnerAPIDocsPage() {
               </div>
             </div>
             <div className="flex items-center gap-4">
+              {/* API Key Input */}
+              <div className="hidden md:flex items-center gap-2">
+                <Key className="h-4 w-4 text-gray-400" />
+                <div className="relative">
+                  <input
+                    type={showApiKey ? "text" : "password"}
+                    value={apiKey}
+                    onChange={(e) => setApiKey(e.target.value)}
+                    placeholder="Enter your API key"
+                    className="w-64 px-3 py-1.5 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 pr-8"
+                  />
+                  <button
+                    onClick={() => setShowApiKey(!showApiKey)}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  >
+                    {showApiKey ? '🙈' : '👁️'}
+                  </button>
+                </div>
+                {apiKey && (
+                  <span className="flex items-center gap-1 text-xs text-green-600">
+                    <CheckCircle className="h-3 w-3" />
+                    Key Set
+                  </span>
+                )}
+              </div>
               <a
                 href="mailto:support@sarastores.com"
                 className="text-sm text-gray-600 hover:text-blue-600"
@@ -334,6 +842,346 @@ export default function PartnerAPIDocsPage() {
                           </tr>
                         </tbody>
                       </table>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Integration Modes Tab */}
+              {activeTab === 'integration-modes' && (
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-4">Integration Modes</h2>
+                  <p className="text-gray-600 mb-6">
+                    Choose the integration mode that best fits your business model. Each mode has different payment flows and requirements.
+                  </p>
+
+                  {/* Mode Comparison */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    {/* Wallet Mode */}
+                    <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg border-2 border-blue-300 p-6">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="p-3 bg-blue-600 rounded-lg">
+                          <Wallet className="h-6 w-6 text-white" />
+                        </div>
+                        <div>
+                          <h3 className="text-xl font-bold text-gray-900">Wallet Mode</h3>
+                          <span className="text-xs bg-blue-200 text-blue-800 px-2 py-0.5 rounded-full">Recommended</span>
+                        </div>
+                      </div>
+                      
+                      <p className="text-gray-700 mb-4">
+                        Use your API key to place orders. Payments are managed through your partner wallet with automatic commission deduction.
+                      </p>
+
+                      <div className="space-y-3 mb-4">
+                        <div className="flex items-start gap-2">
+                          <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+                          <span className="text-sm text-gray-700">Centralized payment management</span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+                          <span className="text-sm text-gray-700">Automatic commission deduction</span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+                          <span className="text-sm text-gray-700">Track earnings in real-time</span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+                          <span className="text-sm text-gray-700">Request payouts anytime</span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+                          <span className="text-sm text-gray-700">Full API access from any origin</span>
+                        </div>
+                      </div>
+
+                      <div className="bg-white rounded-lg p-4">
+                        <h4 className="font-semibold text-gray-900 mb-2">How it works:</h4>
+                        <ol className="text-sm text-gray-600 space-y-2">
+                          <li className="flex items-start gap-2">
+                            <span className="bg-blue-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0 mt-0.5">1</span>
+                            <span>Customer places order on your website</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="bg-blue-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0 mt-0.5">2</span>
+                            <span>You collect payment from customer</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="bg-blue-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0 mt-0.5">3</span>
+                            <span>Call our API with your API key to create order</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="bg-blue-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0 mt-0.5">4</span>
+                            <span>Amount is deducted from your wallet</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="bg-blue-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0 mt-0.5">5</span>
+                            <span>We fulfill the order and ship to customer</span>
+                          </li>
+                        </ol>
+                      </div>
+                    </div>
+
+                    {/* Razorpay Integration Mode */}
+                    <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg border-2 border-green-300 p-6">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="p-3 bg-green-600 rounded-lg">
+                          <CreditCard className="h-6 w-6 text-white" />
+                        </div>
+                        <div>
+                          <h3 className="text-xl font-bold text-gray-900">Razorpay Integration</h3>
+                          <span className="text-xs bg-green-200 text-green-800 px-2 py-0.5 rounded-full">Domain Restricted</span>
+                        </div>
+                      </div>
+                      
+                      <p className="text-gray-700 mb-4">
+                        Accept payments directly on your website using Razorpay. Orders are placed from whitelisted domains only.
+                      </p>
+
+                      <div className="space-y-3 mb-4">
+                        <div className="flex items-start gap-2">
+                          <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+                          <span className="text-sm text-gray-700">Direct payments to your Razorpay account</span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+                          <span className="text-sm text-gray-700">Seamless checkout experience</span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+                          <span className="text-sm text-gray-700">Domain-based security</span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+                          <span className="text-sm text-gray-700">Commission invoiced separately</span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <AlertCircle className="h-5 w-5 text-yellow-600 mt-0.5 flex-shrink-0" />
+                          <span className="text-sm text-gray-700">Requires domain whitelisting</span>
+                        </div>
+                      </div>
+
+                      <div className="bg-white rounded-lg p-4">
+                        <h4 className="font-semibold text-gray-900 mb-2">How it works:</h4>
+                        <ol className="text-sm text-gray-600 space-y-2">
+                          <li className="flex items-start gap-2">
+                            <span className="bg-green-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0 mt-0.5">1</span>
+                            <span>Admin whitelists your website domains</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="bg-green-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0 mt-0.5">2</span>
+                            <span>Customer places order on your website</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="bg-green-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0 mt-0.5">3</span>
+                            <span>Customer pays via Razorpay on your site</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="bg-green-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0 mt-0.5">4</span>
+                            <span>Order is created via API (origin verified)</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="bg-green-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0 mt-0.5">5</span>
+                            <span>We fulfill the order and ship to customer</span>
+                          </li>
+                        </ol>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* API Key Requirements */}
+                  <div className="bg-white rounded-lg border p-6 mb-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                      <Key className="h-5 w-5" />
+                      API Key Requirements by Mode
+                    </h3>
+                    
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="bg-gray-50">
+                            <th className="px-4 py-3 text-left font-medium text-gray-900">Feature</th>
+                            <th className="px-4 py-3 text-center font-medium text-gray-900">Wallet Mode</th>
+                            <th className="px-4 py-3 text-center font-medium text-gray-900">Razorpay Integration</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y">
+                          <tr>
+                            <td className="px-4 py-3">API Key Required</td>
+                            <td className="px-4 py-3 text-center"><CheckCircle className="h-5 w-5 text-green-600 mx-auto" /></td>
+                            <td className="px-4 py-3 text-center"><CheckCircle className="h-5 w-5 text-green-600 mx-auto" /></td>
+                          </tr>
+                          <tr>
+                            <td className="px-4 py-3">Domain Whitelisting Required</td>
+                            <td className="px-4 py-3 text-center"><XCircle className="h-5 w-5 text-gray-400 mx-auto" /></td>
+                            <td className="px-4 py-3 text-center"><CheckCircle className="h-5 w-5 text-green-600 mx-auto" /></td>
+                          </tr>
+                          <tr>
+                            <td className="px-4 py-3">Wallet Balance Required</td>
+                            <td className="px-4 py-3 text-center"><CheckCircle className="h-5 w-5 text-green-600 mx-auto" /></td>
+                            <td className="px-4 py-3 text-center"><XCircle className="h-5 w-5 text-gray-400 mx-auto" /></td>
+                          </tr>
+                          <tr>
+                            <td className="px-4 py-3">Backend API Calls</td>
+                            <td className="px-4 py-3 text-center"><CheckCircle className="h-5 w-5 text-green-600 mx-auto" /></td>
+                            <td className="px-4 py-3 text-center"><span className="text-gray-600">Frontend allowed</span></td>
+                          </tr>
+                          <tr>
+                            <td className="px-4 py-3">Real-time Inventory Check</td>
+                            <td className="px-4 py-3 text-center"><CheckCircle className="h-5 w-5 text-green-600 mx-auto" /></td>
+                            <td className="px-4 py-3 text-center"><CheckCircle className="h-5 w-5 text-green-600 mx-auto" /></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                  {/* Code Examples for Each Mode */}
+                  <div className="space-y-6">
+                    <h3 className="text-lg font-semibold text-gray-900">Integration Examples</h3>
+                    
+                    <div className="bg-white rounded-lg border p-6">
+                      <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                        <Wallet className="h-4 w-4 text-blue-600" />
+                        Wallet Mode - Create Order
+                      </h4>
+                      <CodeBlock
+                        code={`// Backend API call with your API key
+const response = await fetch('https://sarastores.com/api/v1/partner/orders', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    customer: {
+      name: 'John Doe',
+      email: 'john@example.com',
+      phone: '+919876543210',
+      address: {
+        line1: '123 Main Street',
+        city: 'Mumbai',
+        state: 'Maharashtra',
+        pincode: '400001'
+      }
+    },
+    items: [
+      { productId: 'prod_abc123', quantity: 1 }
+    ],
+    paymentMethod: 'prepaid', // You already collected payment
+    partnerOrderId: 'YOUR_ORDER_123'
+  })
+});
+
+const data = await response.json();
+console.log('Order created:', data.data.orderId);`}
+                        title="Wallet Mode - Server-side Order Creation"
+                      />
+                    </div>
+
+                    <div className="bg-white rounded-lg border p-6">
+                      <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                        <CreditCard className="h-4 w-4 text-green-600" />
+                        Razorpay Integration - Create Order with Payment
+                      </h4>
+                      <CodeBlock
+                        code={`// Frontend code on your whitelisted domain
+// Step 1: Create order and get Razorpay order ID
+const orderResponse = await fetch('https://sarastores.com/api/v1/partner/orders/razorpay/create', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    customer: {
+      name: 'John Doe',
+      email: 'john@example.com',
+      phone: '+919876543210',
+      address: {
+        line1: '123 Main Street',
+        city: 'Mumbai',
+        state: 'Maharashtra', 
+        pincode: '400001'
+      }
+    },
+    items: [
+      { productId: 'prod_abc123', quantity: 1 }
+    ]
+  })
+});
+
+const { razorpayOrderId, orderId, amount } = await orderResponse.json();
+
+// Step 2: Open Razorpay payment modal
+const options = {
+  key: 'YOUR_RAZORPAY_KEY',
+  amount: amount * 100, // Amount in paise
+  currency: 'INR',
+  name: 'Your Store Name',
+  order_id: razorpayOrderId,
+  handler: async function(response) {
+    // Step 3: Verify payment
+    await fetch('https://sarastores.com/api/v1/partner/orders/razorpay/verify', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        orderId,
+        razorpay_payment_id: response.razorpay_payment_id,
+        razorpay_signature: response.razorpay_signature
+      })
+    });
+  },
+  prefill: {
+    name: 'John Doe',
+    email: 'john@example.com',
+    contact: '+919876543210'
+  }
+};
+
+const rzp = new Razorpay(options);
+rzp.open();`}
+                        title="Razorpay Integration - Client-side Payment Flow"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Setup Instructions */}
+                  <div className="mt-8 bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+                    <h3 className="text-lg font-semibold text-yellow-900 mb-3 flex items-center gap-2">
+                      <AlertCircle className="h-5 w-5" />
+                      Getting Started
+                    </h3>
+                    <p className="text-yellow-800 mb-4">
+                      Contact our partner support team to configure your integration mode. We'll help you set up:
+                    </p>
+                    <ul className="text-yellow-800 space-y-2">
+                      <li className="flex items-start gap-2">
+                        <CheckCircle className="h-5 w-5 text-yellow-600 mt-0.5 flex-shrink-0" />
+                        <span>Partner account with appropriate tier</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle className="h-5 w-5 text-yellow-600 mt-0.5 flex-shrink-0" />
+                        <span>API keys for test and production environments</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle className="h-5 w-5 text-yellow-600 mt-0.5 flex-shrink-0" />
+                        <span>Wallet balance (for wallet mode)</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle className="h-5 w-5 text-yellow-600 mt-0.5 flex-shrink-0" />
+                        <span>Domain whitelisting (for Razorpay integration)</span>
+                      </li>
+                    </ul>
+                    <div className="mt-4">
+                      <a href="mailto:support@sarastores.com" className="inline-flex items-center gap-2 text-yellow-900 font-medium hover:underline">
+                        <ExternalLink className="h-4 w-4" />
+                        Contact Partner Support
+                      </a>
                     </div>
                   </div>
                 </div>
@@ -901,6 +1749,80 @@ X-RateLimit-Reset: 1706788845
 Retry-After: 45`}
                     title="Rate Limit Headers"
                   />
+                </div>
+              )}
+
+              {/* API Playground Tab */}
+              {activeTab === 'playground' && (
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-4">API Playground</h2>
+                  <p className="text-gray-600 mb-6">
+                    Test API endpoints directly from your browser. Enter your API key in the header above to get started.
+                  </p>
+
+                  {/* API Key Alert */}
+                  {!apiKey && (
+                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+                      <div className="flex items-center gap-3">
+                        <AlertCircle className="h-5 w-5 text-yellow-600" />
+                        <div>
+                          <h4 className="font-medium text-yellow-800">API Key Required</h4>
+                          <p className="text-sm text-yellow-700">
+                            Enter your API key in the header above to start testing API endpoints.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {apiKey && (
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                      <div className="flex items-center gap-3">
+                        <CheckCircle className="h-5 w-5 text-green-600" />
+                        <div>
+                          <h4 className="font-medium text-green-800">API Key Set</h4>
+                          <p className="text-sm text-green-700">
+                            Your API key is configured. You can now test API endpoints.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Mobile API Key Input */}
+                  <div className="md:hidden mb-6">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      API Key
+                    </label>
+                    <div className="relative">
+                      <input
+                        type={showApiKey ? "text" : "password"}
+                        value={apiKey}
+                        onChange={(e) => setApiKey(e.target.value)}
+                        placeholder="Enter your API key (sk_test_... or sk_live_...)"
+                        className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 pr-12"
+                      />
+                      <button
+                        onClick={() => setShowApiKey(!showApiKey)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                      >
+                        {showApiKey ? '🙈' : '👁️'}
+                      </button>
+                    </div>
+                  </div>
+
+                  <APIPlayground apiKey={apiKey} baseUrl={baseUrl} />
+
+                  {/* Tips */}
+                  <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h4 className="font-medium text-blue-900 mb-2">💡 Tips</h4>
+                    <ul className="text-sm text-blue-800 space-y-1">
+                      <li>• Use your <strong>test API key</strong> (sk_test_...) for testing</li>
+                      <li>• Test orders created with test keys don't affect your wallet</li>
+                      <li>• Check the Products API first to get valid product IDs</li>
+                      <li>• All responses are shown in JSON format</li>
+                    </ul>
+                  </div>
                 </div>
               )}
 

@@ -46,36 +46,36 @@ const footerLinks = {
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-900 text-gray-300">
+    <footer className="bg-gradient-to-b from-gray-900 to-gray-950 text-gray-300">
       {/* Features Bar */}
       <div className="border-b border-gray-800">
-        <div className="container-custom py-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-primary-600/20 rounded-xl flex items-center justify-center">
-                <Truck className="h-6 w-6 text-primary-400" />
+        <div className="container-custom py-10">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="flex items-center gap-4 p-4 rounded-xl bg-gray-800/50 hover:bg-gray-800 transition-colors group">
+              <div className="w-14 h-14 bg-primary-600/20 rounded-2xl flex items-center justify-center group-hover:bg-primary-600/30 transition-colors">
+                <Truck className="h-7 w-7 text-primary-400" />
               </div>
               <div>
-                <h4 className="font-medium text-white">Free Delivery</h4>
-                <p className="text-sm text-gray-400">On orders above ₹999</p>
+                <h4 className="font-semibold text-white text-lg">Free Delivery</h4>
+                <p className="text-gray-400">On orders above ₹999</p>
               </div>
             </div>
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-green-600/20 rounded-xl flex items-center justify-center">
-                <Shield className="h-6 w-6 text-green-400" />
+            <div className="flex items-center gap-4 p-4 rounded-xl bg-gray-800/50 hover:bg-gray-800 transition-colors group">
+              <div className="w-14 h-14 bg-green-600/20 rounded-2xl flex items-center justify-center group-hover:bg-green-600/30 transition-colors">
+                <Shield className="h-7 w-7 text-green-400" />
               </div>
               <div>
-                <h4 className="font-medium text-white">Secure Payments</h4>
-                <p className="text-sm text-gray-400">100% secure checkout</p>
+                <h4 className="font-semibold text-white text-lg">Secure Payments</h4>
+                <p className="text-gray-400">100% secure checkout</p>
               </div>
             </div>
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-yellow-600/20 rounded-xl flex items-center justify-center">
-                <CreditCard className="h-6 w-6 text-yellow-400" />
+            <div className="flex items-center gap-4 p-4 rounded-xl bg-gray-800/50 hover:bg-gray-800 transition-colors group">
+              <div className="w-14 h-14 bg-yellow-600/20 rounded-2xl flex items-center justify-center group-hover:bg-yellow-600/30 transition-colors">
+                <CreditCard className="h-7 w-7 text-yellow-400" />
               </div>
               <div>
-                <h4 className="font-medium text-white">Easy Returns</h4>
-                <p className="text-sm text-gray-400">7-day return policy</p>
+                <h4 className="font-semibold text-white text-lg">Easy Returns</h4>
+                <p className="text-gray-400">7-day return policy</p>
               </div>
             </div>
           </div>
@@ -83,8 +83,8 @@ export default function Footer() {
       </div>
 
       {/* Main Footer */}
-      <div className="container-custom py-12">
-        <div className="grid grid-cols-2 md:grid-cols-6 gap-8">
+      <div className="container-custom py-16">
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-8 lg:gap-12">
           {/* Logo & About */}
           <div className="col-span-2">
             <Link href="/" className="flex items-center gap-2 mb-4">
@@ -103,25 +103,29 @@ export default function Footer() {
             <div className="flex items-center gap-3">
               <a
                 href="#"
-                className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-primary-600 transition-colors"
+                className="w-11 h-11 bg-gray-800 rounded-xl flex items-center justify-center hover:bg-primary-600 hover:scale-110 transition-all duration-300"
+                aria-label="Facebook"
               >
                 <Facebook className="h-5 w-5" />
               </a>
               <a
                 href="#"
-                className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-primary-600 transition-colors"
+                className="w-11 h-11 bg-gray-800 rounded-xl flex items-center justify-center hover:bg-primary-600 hover:scale-110 transition-all duration-300"
+                aria-label="Twitter"
               >
                 <Twitter className="h-5 w-5" />
               </a>
               <a
                 href="#"
-                className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-primary-600 transition-colors"
+                className="w-11 h-11 bg-gray-800 rounded-xl flex items-center justify-center hover:bg-gradient-to-br hover:from-purple-600 hover:to-pink-500 hover:scale-110 transition-all duration-300"
+                aria-label="Instagram"
               >
                 <Instagram className="h-5 w-5" />
               </a>
               <a
                 href="#"
-                className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-primary-600 transition-colors"
+                className="w-11 h-11 bg-gray-800 rounded-xl flex items-center justify-center hover:bg-red-600 hover:scale-110 transition-all duration-300"
+                aria-label="YouTube"
               >
                 <Youtube className="h-5 w-5" />
               </a>

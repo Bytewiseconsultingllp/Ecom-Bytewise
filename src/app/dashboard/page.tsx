@@ -86,14 +86,17 @@ export default function ProfilePage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="h-8 w-8 text-blue-600 animate-spin" />
+        <div className="text-center">
+          <Loader2 className="h-10 w-10 text-primary-600 animate-spin mx-auto" />
+          <p className="mt-3 text-gray-500">Loading your profile...</p>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">My Profile</h1>
+      <h1 className="text-2xl font-display font-bold text-gray-900 mb-6">My Profile</h1>
 
       {message && (
         <div
@@ -112,29 +115,29 @@ export default function ProfilePage() {
         </div>
       )}
 
-      <div className="bg-white rounded-xl border overflow-hidden">
+      <div className="bg-white rounded-2xl border shadow-sm overflow-hidden">
         {/* Profile Header */}
-        <div className="bg-gradient-to-r from-blue-500 to-blue-600 p-6">
-          <div className="flex items-center gap-4">
+        <div className="bg-gradient-to-r from-primary-600 via-primary-700 to-primary-800 p-8">
+          <div className="flex items-center gap-5">
             <div className="relative">
-              <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center">
+              <div className="w-24 h-24 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-xl">
                 {profile?.profileImage ? (
                   <img
                     src={profile.profileImage}
                     alt={profile.name}
-                    className="w-20 h-20 rounded-full object-cover"
+                    className="w-24 h-24 rounded-2xl object-cover"
                   />
                 ) : (
-                  <User className="h-10 w-10 text-gray-400" />
+                  <User className="h-12 w-12 text-white" />
                 )}
               </div>
-              <button className="absolute bottom-0 right-0 w-8 h-8 bg-white rounded-full shadow flex items-center justify-center hover:bg-gray-50">
-                <Camera className="h-4 w-4 text-gray-600" />
+              <button className="absolute -bottom-1 -right-1 w-9 h-9 bg-white rounded-xl shadow-lg flex items-center justify-center hover:bg-gray-50 transition-colors">
+                <Camera className="h-5 w-5 text-gray-600" />
               </button>
             </div>
             <div className="text-white">
-              <h2 className="text-xl font-bold">{profile?.name}</h2>
-              <p className="opacity-90">
+              <h2 className="text-2xl font-display font-bold">{profile?.name}</h2>
+              <p className="text-primary-100 mt-1">
                 Member since {profile?.createdAt && new Date(profile.createdAt).toLocaleDateString("en-US", { month: "long", year: "numeric" })}
               </p>
             </div>
@@ -142,23 +145,23 @@ export default function ProfilePage() {
         </div>
 
         {/* Profile Form */}
-        <div className="p-6">
+        <div className="p-8">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="font-semibold text-gray-900">Personal Information</h3>
+            <h3 className="font-semibold text-lg text-gray-900">Personal Information</h3>
             {!editing && (
               <button
                 onClick={() => setEditing(true)}
-                className="text-blue-600 hover:text-blue-700 font-medium text-sm"
+                className="px-4 py-2 text-primary-600 hover:bg-primary-50 rounded-lg font-medium text-sm transition-colors"
               >
                 Edit Profile
               </button>
             )}
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-5">
             {/* Name */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
                 Full Name
               </label>
               {editing ? (
@@ -166,26 +169,26 @@ export default function ProfilePage() {
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all"
                 />
               ) : (
-                <div className="flex items-center gap-3 px-4 py-2 bg-gray-50 rounded-lg">
+                <div className="flex items-center gap-3 px-4 py-3 bg-gray-50 rounded-xl">
                   <User className="h-5 w-5 text-gray-400" />
-                  <span className="text-gray-900">{profile?.name}</span>
+                  <span className="text-gray-900 font-medium">{profile?.name}</span>
                 </div>
               )}
             </div>
 
             {/* Email */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
                 Email Address
               </label>
-              <div className="flex items-center gap-3 px-4 py-2 bg-gray-50 rounded-lg">
+              <div className="flex items-center gap-3 px-4 py-3 bg-gray-50 rounded-xl">
                 <Mail className="h-5 w-5 text-gray-400" />
-                <span className="text-gray-900">{profile?.email}</span>
+                <span className="text-gray-900 font-medium">{profile?.email}</span>
                 {profile?.isEmailVerified && (
-                  <span className="ml-auto px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full flex items-center gap-1">
+                  <span className="ml-auto px-2.5 py-1 bg-green-100 text-green-700 text-xs rounded-lg font-semibold flex items-center gap-1">
                     <Check className="h-3 w-3" /> Verified
                   </span>
                 )}
@@ -194,7 +197,7 @@ export default function ProfilePage() {
 
             {/* Phone */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
                 Phone Number
               </label>
               {editing ? (
@@ -202,15 +205,15 @@ export default function ProfilePage() {
                   type="tel"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all"
                   placeholder="+91 9876543210"
                 />
               ) : (
-                <div className="flex items-center gap-3 px-4 py-2 bg-gray-50 rounded-lg">
+                <div className="flex items-center gap-3 px-4 py-3 bg-gray-50 rounded-xl">
                   <Phone className="h-5 w-5 text-gray-400" />
-                  <span className="text-gray-900">{profile?.phone || "Not provided"}</span>
+                  <span className="text-gray-900 font-medium">{profile?.phone || "Not provided"}</span>
                   {profile?.phone && profile?.isPhoneVerified && (
-                    <span className="ml-auto px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full flex items-center gap-1">
+                    <span className="ml-auto px-2.5 py-1 bg-green-100 text-green-700 text-xs rounded-lg font-semibold flex items-center gap-1">
                       <Check className="h-3 w-3" /> Verified
                     </span>
                   )}
@@ -221,16 +224,16 @@ export default function ProfilePage() {
 
           {/* Edit Actions */}
           {editing && (
-            <div className="flex items-center gap-3 mt-6 pt-6 border-t">
+            <div className="flex items-center gap-3 mt-8 pt-6 border-t">
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-xl hover:from-primary-700 hover:to-primary-800 disabled:opacity-50 transition-all font-semibold shadow-lg"
               >
                 {saving ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <Loader2 className="h-5 w-5 animate-spin" />
                 ) : (
-                  <Check className="h-4 w-4" />
+                  <Check className="h-5 w-5" />
                 )}
                 Save Changes
               </button>
@@ -239,7 +242,7 @@ export default function ProfilePage() {
                   setEditing(false);
                   setFormData({ name: profile?.name || "", phone: profile?.phone || "" });
                 }}
-                className="flex-1 px-4 py-2 border rounded-lg hover:bg-gray-50 transition-colors"
+                className="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl hover:bg-gray-50 transition-colors font-semibold"
               >
                 Cancel
               </button>

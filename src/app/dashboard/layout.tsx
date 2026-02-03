@@ -65,14 +65,16 @@ export default function DashboardLayout({
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Mobile Header */}
-      <div className="lg:hidden bg-white border-b px-4 py-3 flex items-center justify-between fixed top-0 left-0 right-0 z-50">
+      <div className="lg:hidden bg-white border-b shadow-sm px-4 py-3 flex items-center justify-between fixed top-0 left-0 right-0 z-50">
         <Link href="/" className="flex items-center gap-2">
-          <Store className="h-6 w-6 text-blue-600" />
+          <div className="w-8 h-8 bg-gradient-to-br from-primary-600 to-primary-700 rounded-lg flex items-center justify-center">
+            <Store className="h-5 w-5 text-white" />
+          </div>
           <span className="font-bold text-gray-900">ByteWise</span>
         </Link>
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="p-2 text-gray-600"
+          className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
         >
           {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
         </button>
@@ -83,30 +85,32 @@ export default function DashboardLayout({
 
       <div className="flex min-h-screen">
         {/* Desktop Sidebar */}
-        <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 lg:left-0 bg-white border-r shadow-sm z-40 overflow-y-auto">
+        <aside className="hidden lg:flex lg:flex-col lg:w-72 lg:fixed lg:inset-y-0 lg:left-0 bg-white border-r shadow-sm z-40 overflow-y-auto">
           {/* Logo */}
           <div className="h-16 flex items-center px-6 border-b flex-shrink-0">
-            <Link href="/" className="flex items-center gap-2">
-              <Store className="h-8 w-8 text-blue-600" />
-              <span className="text-xl font-bold text-gray-900">ByteWise</span>
+            <Link href="/" className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-primary-600 to-primary-700 rounded-xl flex items-center justify-center shadow-lg">
+                <Store className="h-6 w-6 text-white" />
+              </div>
+              <span className="text-xl font-display font-bold text-gray-900">ByteWise</span>
             </Link>
           </div>
 
           {/* User Info */}
-          <div className="p-4 border-b flex-shrink-0">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-                <User className="h-5 w-5 text-blue-600" />
+          <div className="p-5 border-b flex-shrink-0">
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-primary-50 to-transparent">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center shadow-md">
+                <User className="h-6 w-6 text-white" />
               </div>
               <div>
-                <p className="font-medium text-gray-900">{userName || "Loading..."}</p>
-                <p className="text-sm text-gray-500">My Account</p>
+                <p className="font-semibold text-gray-900">{userName || "Loading..."}</p>
+                <p className="text-sm text-primary-600">My Account</p>
               </div>
             </div>
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+          <nav className="flex-1 p-4 space-y-1.5 overflow-y-auto">
             {sidebarItems.map((item) => {
               const isActive = pathname === item.href || 
                 (item.href !== "/dashboard" && pathname.startsWith(item.href));
@@ -114,14 +118,14 @@ export default function DashboardLayout({
                 <Link
                   key={item.name}
                   href={item.href}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                  className={`flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-200 ${
                     isActive
-                      ? "bg-blue-50 text-blue-700 font-medium"
-                      : "text-gray-600 hover:bg-gray-50"
+                      ? "bg-primary-600 text-white shadow-md shadow-primary-600/30"
+                      : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
                   }`}
                 >
                   <item.icon className="h-5 w-5" />
-                  {item.name}
+                  <span className="font-medium">{item.name}</span>
                 </Link>
               );
             })}
@@ -131,7 +135,7 @@ export default function DashboardLayout({
           <div className="p-4 border-t flex-shrink-0 mt-auto">
             <button
               onClick={handleLogout}
-              className="flex items-center gap-3 px-4 py-3 w-full text-left text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+              className="flex items-center gap-3 px-4 py-3.5 w-full text-left text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 font-medium"
             >
               <LogOut className="h-5 w-5" />
               Logout

@@ -233,16 +233,16 @@ function ProductsContent() {
   const hasActiveFilters = selectedCategory !== 'all' || selectedBrand !== 'All Brands' || selectedPriceRange !== 0
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
       {/* Page Header */}
-      <div className="bg-white border-b">
-        <div className="container-custom py-6">
-          <h1 className="text-2xl md:text-3xl font-display font-bold text-gray-900">
+      <div className="bg-gradient-to-r from-primary-600 via-primary-700 to-primary-800 text-white">
+        <div className="container-custom py-10">
+          <h1 className="text-2xl md:text-4xl font-display font-bold">
             {selectedCategory === 'all' 
               ? 'All Products' 
               : selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)}
           </h1>
-          <p className="text-gray-500 mt-1">
+          <p className="text-primary-100 mt-2">
             {filteredProducts.length} products found
           </p>
         </div>
@@ -251,14 +251,14 @@ function ProductsContent() {
       <div className="container-custom py-8">
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Filters Sidebar - Desktop */}
-          <aside className="hidden lg:block w-64 flex-shrink-0">
-            <div className="bg-white rounded-2xl p-6 sticky top-24">
+          <aside className="hidden lg:block w-72 flex-shrink-0">
+            <div className="bg-white rounded-2xl p-6 sticky top-24 shadow-sm border border-gray-100">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="font-semibold text-gray-900">Filters</h2>
+                <h2 className="font-display font-bold text-gray-900">Filters</h2>
                 {hasActiveFilters && (
                   <button
                     onClick={clearFilters}
-                    className="text-sm text-primary-600 hover:text-primary-700"
+                    className="text-sm text-primary-600 hover:text-primary-700 font-semibold"
                   >
                     Clear all
                   </button>
@@ -266,19 +266,19 @@ function ProductsContent() {
               </div>
 
               {/* Categories */}
-              <div className="mb-6">
-                <h3 className="font-medium text-gray-900 mb-3">Category</h3>
-                <div className="space-y-2">
+              <div className="mb-6 pb-6 border-b border-gray-100">
+                <h3 className="font-semibold text-gray-900 mb-4">Category</h3>
+                <div className="space-y-3">
                   {categories.map((category) => (
-                    <label key={category} className="flex items-center gap-2 cursor-pointer">
+                    <label key={category} className="flex items-center gap-3 cursor-pointer group">
                       <input
                         type="radio"
                         name="category"
                         checked={selectedCategory === category}
                         onChange={() => setSelectedCategory(category)}
-                        className="w-4 h-4 text-primary-600 focus:ring-primary-500"
+                        className="w-4 h-4 text-primary-600 focus:ring-primary-500 focus:ring-offset-0"
                       />
-                      <span className="text-gray-600 capitalize">
+                      <span className="text-gray-600 capitalize group-hover:text-gray-900 transition-colors">
                         {category === 'all' ? 'All Categories' : category}
                       </span>
                     </label>
@@ -287,19 +287,19 @@ function ProductsContent() {
               </div>
 
               {/* Brands */}
-              <div className="mb-6">
-                <h3 className="font-medium text-gray-900 mb-3">Brand</h3>
-                <div className="space-y-2">
+              <div className="mb-6 pb-6 border-b border-gray-100">
+                <h3 className="font-semibold text-gray-900 mb-4">Brand</h3>
+                <div className="space-y-3">
                   {brands.map((brand) => (
-                    <label key={brand} className="flex items-center gap-2 cursor-pointer">
+                    <label key={brand} className="flex items-center gap-3 cursor-pointer group">
                       <input
                         type="radio"
                         name="brand"
                         checked={selectedBrand === brand}
                         onChange={() => setSelectedBrand(brand)}
-                        className="w-4 h-4 text-primary-600 focus:ring-primary-500"
+                        className="w-4 h-4 text-primary-600 focus:ring-primary-500 focus:ring-offset-0 focus:ring-offset-0"
                       />
-                      <span className="text-gray-600">{brand}</span>
+                      <span className="text-gray-600 group-hover:text-gray-900 transition-colors">{brand}</span>
                     </label>
                   ))}
                 </div>
@@ -307,18 +307,18 @@ function ProductsContent() {
 
               {/* Price Range */}
               <div>
-                <h3 className="font-medium text-gray-900 mb-3">Price Range</h3>
-                <div className="space-y-2">
+                <h3 className="font-semibold text-gray-900 mb-4">Price Range</h3>
+                <div className="space-y-3">
                   {priceRanges.map((range, index) => (
-                    <label key={index} className="flex items-center gap-2 cursor-pointer">
+                    <label key={index} className="flex items-center gap-3 cursor-pointer group">
                       <input
                         type="radio"
                         name="price"
                         checked={selectedPriceRange === index}
                         onChange={() => setSelectedPriceRange(index)}
-                        className="w-4 h-4 text-primary-600 focus:ring-primary-500"
+                        className="w-4 h-4 text-primary-600 focus:ring-primary-500 focus:ring-offset-0"
                       />
-                      <span className="text-gray-600">{range.label}</span>
+                      <span className="text-gray-600 group-hover:text-gray-900 transition-colors">{range.label}</span>
                     </label>
                   ))}
                 </div>
@@ -329,12 +329,12 @@ function ProductsContent() {
           {/* Main Content */}
           <div className="flex-1">
             {/* Toolbar */}
-            <div className="bg-white rounded-xl p-4 mb-6 flex flex-wrap items-center justify-between gap-4">
+            <div className="bg-white rounded-2xl p-4 md:p-5 mb-6 flex flex-wrap items-center justify-between gap-4 shadow-sm border border-gray-100">
               <div className="flex items-center gap-4">
                 {/* Mobile Filter Toggle */}
                 <button
                   onClick={() => setShowFilters(!showFilters)}
-                  className="lg:hidden flex items-center gap-2 px-4 py-2 border rounded-lg hover:bg-gray-50"
+                  className="lg:hidden flex items-center gap-2 px-4 py-2.5 border-2 border-gray-200 rounded-xl hover:bg-gray-50 font-medium transition-all"
                 >
                   <Filter className="h-4 w-4" />
                   Filters
@@ -345,7 +345,7 @@ function ProductsContent() {
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
-                    className="appearance-none bg-white border rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    className="appearance-none bg-white border-2 border-gray-200 rounded-xl px-4 py-2.5 pr-10 font-medium focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all"
                   >
                     {sortOptions.map((option) => (
                       <option key={option.value} value={option.value}>
@@ -358,16 +358,16 @@ function ProductsContent() {
               </div>
 
               {/* View Mode Toggle */}
-              <div className="hidden sm:flex items-center gap-2 border rounded-lg p-1">
+              <div className="hidden sm:flex items-center gap-1 bg-gray-100 rounded-xl p-1">
                 <button
                   onClick={() => setViewMode('grid')}
-                  className={`p-2 rounded ${viewMode === 'grid' ? 'bg-primary-100 text-primary-600' : 'text-gray-400'}`}
+                  className={`p-2.5 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-white text-primary-600 shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}
                 >
                   <Grid3X3 className="h-4 w-4" />
                 </button>
                 <button
                   onClick={() => setViewMode('list')}
-                  className={`p-2 rounded ${viewMode === 'list' ? 'bg-primary-100 text-primary-600' : 'text-gray-400'}`}
+                  className={`p-2.5 rounded-lg transition-all ${viewMode === 'list' ? 'bg-white text-primary-600 shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}
                 >
                   <List className="h-4 w-4" />
                 </button>
@@ -376,29 +376,29 @@ function ProductsContent() {
 
             {/* Active Filters */}
             {hasActiveFilters && (
-              <div className="flex flex-wrap items-center gap-2 mb-6">
-                <span className="text-sm text-gray-500">Active filters:</span>
+              <div className="flex flex-wrap items-center gap-3 mb-6">
+                <span className="text-sm font-medium text-gray-500">Active filters:</span>
                 {selectedCategory !== 'all' && (
-                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-primary-100 text-primary-700 rounded-full text-sm">
+                  <span className="inline-flex items-center gap-2 px-4 py-2 bg-primary-50 text-primary-700 rounded-full text-sm font-medium">
                     {selectedCategory}
-                    <button onClick={() => setSelectedCategory('all')}>
-                      <X className="h-3 w-3" />
+                    <button onClick={() => setSelectedCategory('all')} className="hover:bg-primary-100 rounded-full p-0.5 transition-colors">
+                      <X className="h-3.5 w-3.5" />
                     </button>
                   </span>
                 )}
                 {selectedBrand !== 'All Brands' && (
-                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-primary-100 text-primary-700 rounded-full text-sm">
+                  <span className="inline-flex items-center gap-2 px-4 py-2 bg-primary-50 text-primary-700 rounded-full text-sm font-medium">
                     {selectedBrand}
-                    <button onClick={() => setSelectedBrand('All Brands')}>
-                      <X className="h-3 w-3" />
+                    <button onClick={() => setSelectedBrand('All Brands')} className="hover:bg-primary-100 rounded-full p-0.5 transition-colors">
+                      <X className="h-3.5 w-3.5" />
                     </button>
                   </span>
                 )}
                 {selectedPriceRange !== 0 && (
-                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-primary-100 text-primary-700 rounded-full text-sm">
+                  <span className="inline-flex items-center gap-2 px-4 py-2 bg-primary-50 text-primary-700 rounded-full text-sm font-medium">
                     {priceRanges[selectedPriceRange].label}
-                    <button onClick={() => setSelectedPriceRange(0)}>
-                      <X className="h-3 w-3" />
+                    <button onClick={() => setSelectedPriceRange(0)} className="hover:bg-primary-100 rounded-full p-0.5 transition-colors">
+                      <X className="h-3.5 w-3.5" />
                     </button>
                   </span>
                 )}
@@ -407,7 +407,7 @@ function ProductsContent() {
 
             {/* Products Grid */}
             {filteredProducts.length > 0 ? (
-              <div className={`grid gap-4 md:gap-6 ${
+              <div className={`grid gap-5 md:gap-6 ${
                 viewMode === 'grid' 
                   ? 'grid-cols-2 md:grid-cols-3' 
                   : 'grid-cols-1'
@@ -417,15 +417,15 @@ function ProductsContent() {
                 ))}
               </div>
             ) : (
-              <div className="bg-white rounded-2xl p-12 text-center">
-                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Filter className="h-8 w-8 text-gray-400" />
+              <div className="bg-white rounded-2xl p-12 text-center shadow-sm border border-gray-100">
+                <div className="w-20 h-20 bg-gradient-to-br from-gray-100 to-gray-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <Filter className="h-10 w-10 text-gray-400" />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">No products found</h3>
-                <p className="text-gray-500 mb-4">Try adjusting your filters</p>
+                <h3 className="text-xl font-display font-bold text-gray-900 mb-2">No products found</h3>
+                <p className="text-gray-500 mb-6">Try adjusting your filters to find what you're looking for</p>
                 <button
                   onClick={clearFilters}
-                  className="btn-primary"
+                  className="px-6 py-3 bg-gradient-to-r from-primary-600 to-primary-700 text-white font-semibold rounded-xl shadow-lg shadow-primary-200 hover:from-primary-700 hover:to-primary-800 transition-all"
                 >
                   Clear all filters
                 </button>
@@ -438,21 +438,21 @@ function ProductsContent() {
       {/* Mobile Filters Modal */}
       {showFilters && (
         <div className="fixed inset-0 z-50 lg:hidden">
-          <div className="absolute inset-0 bg-black/50" onClick={() => setShowFilters(false)} />
-          <div className="absolute right-0 top-0 bottom-0 w-80 bg-white p-6 overflow-y-auto">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="font-semibold text-gray-900">Filters</h2>
-              <button onClick={() => setShowFilters(false)}>
-                <X className="h-6 w-6 text-gray-400" />
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowFilters(false)} />
+          <div className="absolute right-0 top-0 bottom-0 w-80 bg-white p-6 overflow-y-auto shadow-2xl">
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="font-display font-bold text-gray-900 text-lg">Filters</h2>
+              <button onClick={() => setShowFilters(false)} className="p-2 hover:bg-gray-100 rounded-xl transition-colors">
+                <X className="h-5 w-5 text-gray-400" />
               </button>
             </div>
 
             {/* Categories */}
-            <div className="mb-6">
-              <h3 className="font-medium text-gray-900 mb-3">Category</h3>
-              <div className="space-y-2">
+            <div className="mb-6 pb-6 border-b border-gray-100">
+              <h3 className="font-semibold text-gray-900 mb-4">Category</h3>
+              <div className="space-y-3">
                 {categories.map((category) => (
-                  <label key={category} className="flex items-center gap-2 cursor-pointer">
+                  <label key={category} className="flex items-center gap-3 cursor-pointer">
                     <input
                       type="radio"
                       name="category-mobile"
@@ -469,11 +469,11 @@ function ProductsContent() {
             </div>
 
             {/* Brands */}
-            <div className="mb-6">
-              <h3 className="font-medium text-gray-900 mb-3">Brand</h3>
-              <div className="space-y-2">
+            <div className="mb-6 pb-6 border-b border-gray-100">
+              <h3 className="font-semibold text-gray-900 mb-4">Brand</h3>
+              <div className="space-y-3">
                 {brands.map((brand) => (
-                  <label key={brand} className="flex items-center gap-2 cursor-pointer">
+                  <label key={brand} className="flex items-center gap-3 cursor-pointer">
                     <input
                       type="radio"
                       name="brand-mobile"
@@ -488,11 +488,11 @@ function ProductsContent() {
             </div>
 
             {/* Price Range */}
-            <div className="mb-6">
-              <h3 className="font-medium text-gray-900 mb-3">Price Range</h3>
-              <div className="space-y-2">
+            <div className="mb-8">
+              <h3 className="font-semibold text-gray-900 mb-4">Price Range</h3>
+              <div className="space-y-3">
                 {priceRanges.map((range, index) => (
-                  <label key={index} className="flex items-center gap-2 cursor-pointer">
+                  <label key={index} className="flex items-center gap-3 cursor-pointer">
                     <input
                       type="radio"
                       name="price-mobile"
@@ -509,13 +509,13 @@ function ProductsContent() {
             <div className="flex gap-3">
               <button
                 onClick={clearFilters}
-                className="flex-1 btn-secondary"
+                className="flex-1 py-3 border-2 border-gray-200 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 transition-all"
               >
                 Clear
               </button>
               <button
                 onClick={() => setShowFilters(false)}
-                className="flex-1 btn-primary"
+                className="flex-1 py-3 bg-gradient-to-r from-primary-600 to-primary-700 text-white font-semibold rounded-xl shadow-lg shadow-primary-200 hover:from-primary-700 hover:to-primary-800 transition-all"
               >
                 Apply
               </button>
