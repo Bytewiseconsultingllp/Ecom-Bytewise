@@ -393,8 +393,20 @@ export async function GET(request: NextRequest) {
     // Check if we got HTML (security checkpoint)
     const contentType = response.headers.get('content-type')
     if (contentType?.includes('text/html')) {
-      console.warn('[SARA API Route] Received HTML instead of JSON, using mock data')
-      return serveMockData(request)
+      console.warn('[SARA API Route] Received HTML instead of JSON - Vercel Security Checkpoint is blocking')
+      // Return error response indicating security checkpoint is active
+      return NextResponse.json({
+        success: false,
+        error: {
+          code: 'VERCEL_SECURITY_CHECKPOINT',
+          message: 'SaraMobiles API is blocked by Vercel Security Checkpoint. The API team needs to disable Attack Challenge Mode or exempt /api/v1/partner/* routes in Vercel Dashboard.',
+          details: {
+            apiUrl: SARA_API_URL,
+            suggestion: 'Contact SaraMobiles to disable Vercel Attack Challenge Mode for partner API routes'
+          }
+        },
+        _blocked: true
+      }, { status: 503 })
     }
 
     // Get response data

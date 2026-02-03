@@ -252,27 +252,47 @@ function ProductsContent() {
     }
     
     try {
-      console.log('[Products] Fetching from SaraMobiles API...')
-      const response = await saraMobilesAPI.getProducts({
-        category: selectedCategory !== 'all' ? selectedCategory : undefined,
-        search: searchQuery || undefined,
-        brand: selectedBrand !== 'All Brands' ? selectedBrand : undefined,
-        limit: 50,
+      console.log('[Products] Fetching from SaraMobiles API via proxy...')
+      
+      // Use our proxy API route to avoid CORS/security issues
+      const queryParams = new URLSearchParams({
+        limit: '50',
+        ...(selectedCategory !== 'all' && { category: selectedCategory }),
+        ...(searchQuery && { search: searchQuery }),
+        ...(selectedBrand !== 'All Brands' && { brand: selectedBrand })
       })
+      
+      const proxyResponse = await fetch(`/api/v1/sara-products?${queryParams}`)
+      const response = await proxyResponse.json()
 
       console.log('[Products] API Response:', response)
+
+      // Check for security checkpoint blocking
+      if (response?._blocked || response?.error?.code === 'VERCEL_SECURITY_CHECKPOINT') {
+        console.warn('[Products] API blocked by Vercel Security Checkpoint')
+        setApiState({
+          products: fallbackProducts,
+          loading: false,
+          error: '🔒 SaraMobiles API blocked by Vercel Security Checkpoint',
+          usingFallback: true,
+          pagination: { page: 1, totalPages: 1, total: fallbackProducts.length }
+        })
+        return
+      }
 
       // Safely access products with null checks
       const products = response?.data?.products || []
       const pagination = response?.data?.pagination || { page: 1, totalPages: 1, total: 0 }
 
       if (response?.success && products.length > 0) {
+        // Check if this is mock data
+        const isMockData = response?._mock === true
         const localProducts = products.map(convertSaraProductToLocal)
         setApiState({
           products: localProducts,
           loading: false,
-          error: null,
-          usingFallback: false,
+          error: isMockData ? 'Using demo data (API unavailable)' : null,
+          usingFallback: isMockData,
           pagination: pagination
         })
       } else {

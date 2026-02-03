@@ -55,15 +55,29 @@ export default function AdminProducts() {
     }
     
     try {
-      // Fetch from SaraMobiles Partner API
+      // Fetch from SaraMobiles Partner API via our proxy
       console.log('[Admin Products] Fetching from:', config.baseUrl)
-      const response = await saraMobilesAPI.getProducts({
-        page,
-        limit: 20,
-        search: searchQuery || undefined
+      
+      // Use our proxy API route instead of direct saraMobilesAPI call
+      const queryParams = new URLSearchParams({
+        page: page.toString(),
+        limit: '20',
+        ...(searchQuery && { search: searchQuery })
       })
       
+      const proxyResponse = await fetch(`/api/v1/sara-products?${queryParams}`)
+      const response = await proxyResponse.json()
+      
       console.log('[Admin Products] Response:', response)
+      
+      // Check for security checkpoint error
+      if (response?._blocked || response?.error?.code === 'VERCEL_SECURITY_CHECKPOINT') {
+        setError('🔒 Vercel Security Checkpoint Blocking API')
+        setErrorDetails(response?.error?.message || 'SaraMobiles API is blocked. Contact their team to disable Attack Challenge Mode for partner API routes.')
+        setProducts([])
+        setLoading(false)
+        return
+      }
       
       // Safely access products with null checks
       const products = response?.data?.products || []
