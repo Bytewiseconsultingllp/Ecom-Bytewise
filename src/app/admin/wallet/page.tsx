@@ -36,37 +36,11 @@ export default function AdminWalletPage() {
     pendingPayouts: 0,
   });
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [filter, setFilter] = useState("all");
 
-  useEffect(() => {
-    fetchWalletData();
-  }, []);
-
-  const fetchWalletData = async () => {
-    setLoading(true);
-    try {
-      const token = localStorage.getItem('admin_token');
-      const res = await fetch('/api/v1/admin/wallet', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const data = await res.json();
-      
-      if (data.success) {
-        setStats({
-          totalBalance: data.data.stats.totalBalance,
-          totalCredits: data.data.stats.totalCredits,
-          totalDebits: data.data.stats.totalDebits,
-          pendingPayouts: data.data.stats.pendingPayouts,
-        });
-        setTransactions(data.data.transactions || []);
-      }
-    } catch (error) {
-      console.error("Failed to fetch wallet data:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // This partner uses Razorpay integration, not wallet mode
+  // Wallet functionality is disabled
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-IN", {
@@ -81,146 +55,139 @@ export default function AdminWalletPage() {
     return txn.type === filter;
   });
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <RefreshCw className="h-8 w-8 text-blue-600 animate-spin" />
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Wallet Overview</h1>
-          <p className="text-gray-600">Monitor financial transactions and payouts</p>
-        </div>
-        <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-          <Download className="h-4 w-4" />
-          Export Report
-        </button>
-      </div>
-
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white rounded-xl border p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Total Balance</p>
-              <p className="text-2xl font-bold text-gray-900 mt-1">
-                {formatCurrency(stats.totalBalance)}
-              </p>
-            </div>
-            <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-              <Wallet className="h-6 w-6 text-blue-600" />
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl border p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Total Credits</p>
-              <p className="text-2xl font-bold text-green-600 mt-1">
-                {formatCurrency(stats.totalCredits)}
-              </p>
-            </div>
-            <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-              <TrendingUp className="h-6 w-6 text-green-600" />
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl border p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Total Debits</p>
-              <p className="text-2xl font-bold text-red-600 mt-1">
-                {formatCurrency(stats.totalDebits)}
-              </p>
-            </div>
-            <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center">
-              <TrendingDown className="h-6 w-6 text-red-600" />
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl border p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Pending Payouts</p>
-              <p className="text-2xl font-bold text-orange-600 mt-1">
-                {formatCurrency(stats.pendingPayouts)}
-              </p>
-            </div>
-            <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
-              <ArrowUpRight className="h-6 w-6 text-orange-600" />
-            </div>
-          </div>
+          <h1 className="text-2xl font-bold text-gray-900">Payment Integration</h1>
+          <p className="text-gray-600">Razorpay payment gateway configuration</p>
         </div>
       </div>
 
-      {/* Transactions */}
+      {/* Razorpay Integration Notice */}
+      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl p-8">
+        <div className="flex items-start gap-4">
+          <div className="w-16 h-16 bg-blue-600 rounded-xl flex items-center justify-center flex-shrink-0">
+            <Wallet className="h-8 w-8 text-white" />
+          </div>
+          <div className="flex-1">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Razorpay Integration Active</h2>
+            <p className="text-gray-700 mb-4">
+              This partner account uses <strong>Razorpay Payment Gateway</strong> for processing payments directly.
+              Wallet mode is not applicable for this configuration.
+            </p>
+            <div className="bg-white rounded-lg p-4 border border-blue-200">
+              <h3 className="font-semibold text-gray-900 mb-3">Payment Configuration</h3>
+              <div className="space-y-2 text-sm">
+                <div className="flex items-center justify-between py-2 border-b">
+                  <span className="text-gray-600">Payment Method:</span>
+                  <span className="font-medium text-gray-900">Razorpay Gateway</span>
+                </div>
+                <div className="flex items-center justify-between py-2 border-b">
+                  <span className="text-gray-600">Integration Type:</span>
+                  <span className="font-medium text-gray-900">Direct Payment</span>
+                </div>
+                <div className="flex items-center justify-between py-2 border-b">
+                  <span className="text-gray-600">Mode:</span>
+                  <span className="font-medium text-gray-900">Prepaid & COD</span>
+                </div>
+                <div className="flex items-center justify-between py-2">
+                  <span className="text-gray-600">Status:</span>
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-green-100 text-green-800 rounded-full font-medium">
+                    <span className="w-2 h-2 bg-green-600 rounded-full"></span>
+                    Active
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div className="mt-4 p-4 bg-blue-100 rounded-lg">
+              <h4 className="font-semibold text-blue-900 mb-2">How it works:</h4>
+              <ul className="space-y-2 text-sm text-blue-800">
+                <li className="flex items-start gap-2">
+                  <span className="text-blue-600 font-bold mt-0.5">•</span>
+                  <span>Customers pay directly through Razorpay on checkout</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-blue-600 font-bold mt-0.5">•</span>
+                  <span>Orders are automatically created in SaraMobiles API</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-blue-600 font-bold mt-0.5">•</span>
+                  <span>Partner earns commission on confirmed orders</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-blue-600 font-bold mt-0.5">•</span>
+                  <span>No wallet balance management required</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Razorpay Environment Variables */}
       <div className="bg-white rounded-xl border">
-        <div className="flex items-center justify-between p-4 border-b">
-          <h2 className="font-semibold text-gray-900">Recent Transactions</h2>
-          <div className="flex items-center gap-2">
-            <Filter className="h-4 w-4 text-gray-400" />
-            <select
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
-              className="text-sm border rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-blue-500 outline-none"
-            >
-              <option value="all">All Transactions</option>
-              <option value="credit">Credits Only</option>
-              <option value="debit">Debits Only</option>
-            </select>
+        <div className="p-6 border-b">
+          <h2 className="text-lg font-semibold text-gray-900">Razorpay Configuration</h2>
+          <p className="text-sm text-gray-600 mt-1">Your Razorpay API keys from environment variables</p>
+        </div>
+        <div className="p-6 space-y-4">
+          <div className="bg-gray-50 rounded-lg p-4 font-mono text-sm">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-gray-600">Key ID (Public):</span>
+              <span className="text-gray-900 font-semibold">{process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'Not configured'}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-gray-600">Key Secret:</span>
+              <span className="text-gray-900 font-semibold">••••••••••••••••</span>
+            </div>
+          </div>
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+            <p className="text-sm text-yellow-800">
+              <strong>Note:</strong> Configure your Razorpay keys in the <code className="bg-yellow-100 px-2 py-0.5 rounded">.env</code> file.
+              Get your keys from <a href="https://dashboard.razorpay.com/app/keys" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">Razorpay Dashboard</a>.
+            </p>
           </div>
         </div>
+      </div>
 
-        <div className="divide-y">
-          {filteredTransactions.map((txn) => (
-            <div
-              key={txn.id}
-              className="flex items-center justify-between p-4 hover:bg-gray-50"
-            >
-              <div className="flex items-center gap-4">
-                <div
-                  className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                    txn.type === "credit"
-                      ? "bg-green-100"
-                      : "bg-red-100"
-                  }`}
-                >
-                  {txn.type === "credit" ? (
-                    <ArrowDownLeft className="h-5 w-5 text-green-600" />
-                  ) : (
-                    <ArrowUpRight className="h-5 w-5 text-red-600" />
-                  )}
-                </div>
-                <div>
-                  <p className="font-medium text-gray-900">{txn.description}</p>
-                  <p className="text-sm text-gray-500">
-                    {txn.orderId && (
-                      <span className="font-mono">{txn.orderId} • </span>
-                    )}
-                    {new Date(txn.createdAt).toLocaleDateString()}
-                  </p>
-                </div>
-              </div>
-              <div className="text-right">
-                <p
-                  className={`font-semibold ${
-                    txn.type === "credit" ? "text-green-600" : "text-red-600"
-                  }`}
-                >
-                  {txn.type === "credit" ? "+" : "-"}
-                  {formatCurrency(txn.amount)}
-                </p>
+      {/* Payment Flow Documentation */}
+      <div className="bg-white rounded-xl border">
+        <div className="p-6 border-b">
+          <h2 className="text-lg font-semibold text-gray-900">Payment Flow</h2>
+          <p className="text-sm text-gray-600 mt-1">How payments are processed with Razorpay</p>
+        </div>
+        <div className="p-6">
+          <div className="space-y-4">
+            <div className="flex gap-4">
+              <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold flex-shrink-0">1</div>
+              <div>
+                <h3 className="font-semibold text-gray-900">Customer Checkout</h3>
+                <p className="text-sm text-gray-600 mt-1">Customer selects products and proceeds to checkout</p>
               </div>
             </div>
-          ))}
+            <div className="flex gap-4">
+              <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold flex-shrink-0">2</div>
+              <div>
+                <h3 className="font-semibold text-gray-900">Razorpay Payment</h3>
+                <p className="text-sm text-gray-600 mt-1">Razorpay payment gateway opens, customer pays securely</p>
+              </div>
+            </div>
+            <div className="flex gap-4">
+              <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold flex-shrink-0">3</div>
+              <div>
+                <h3 className="font-semibold text-gray-900">Order Creation</h3>
+                <p className="text-sm text-gray-600 mt-1">Order is created in SaraMobiles API with payment confirmation</p>
+              </div>
+            </div>
+            <div className="flex gap-4">
+              <div className="w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center font-bold flex-shrink-0">4</div>
+              <div>
+                <h3 className="font-semibold text-gray-900">Commission Earned</h3>
+                <p className="text-sm text-gray-600 mt-1">Partner commission is calculated and tracked by SaraMobiles</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

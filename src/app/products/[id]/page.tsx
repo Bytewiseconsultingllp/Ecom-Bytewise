@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import { 
@@ -14,13 +14,16 @@ import {
   Minus,
   Plus,
   Share2,
-  Check
+  Check,
+  AlertCircle,
+  RefreshCw
 } from 'lucide-react'
 import { useCartStore } from '@/store/cartStore'
 import { useWishlistStore } from '@/store/wishlistStore'
+import saraMobilesAPI, { SaraProduct, convertSaraProductToLocal } from '@/lib/saramobiles-api'
 
-// Sample product data - In production, fetch from API
-const getProductById = (id: string) => {
+// Fallback product data - In production, fetch from API
+const getFallbackProduct = (id: string) => {
   const products: { [key: string]: any } = {
     'prod_001': {
       id: 'prod_001',
@@ -71,10 +74,63 @@ const getProductById = (id: string) => {
   return products[id] || products['prod_001']
 }
 
+// Convert SaraMobiles product to detailed product format
+function convertToDetailedProduct(saraProduct: SaraProduct) {
+  const localProduct = convertSaraProductToLocal(saraProduct)
+  
+  // Generate highlights from specifications or use defaults
+  const highlights = saraProduct.specifications 
+    ? Object.entries(saraProduct.specifications).slice(0, 6).map(([key, value]) => `${key}: ${value}`)
+    : [
+        'High Quality Build',
+        'Energy Efficient',
+        'Latest Technology',
+        'Easy Setup',
+        'Premium Finish',
+        'Wide Compatibility',
+      ]
+
+  return {
+    id: saraProduct.id,
+    name: saraProduct.name,
+    price: saraProduct.price,
+    mrp: saraProduct.mrp,
+    images: localProduct.images,
+    rating: localProduct.rating,
+    reviews: localProduct.reviews,
+    inStock: saraProduct.inStock,
+    brand: saraProduct.brand,
+    sku: saraProduct.sku,
+    category: saraProduct.category.charAt(0).toUpperCase() + saraProduct.category.slice(1),
+    description: saraProduct.description,
+    highlights,
+    specifications: saraProduct.specifications || {},
+    deliveryInfo: saraProduct.deliveryInfo || {
+      estimatedDays: 3,
+      freeDelivery: saraProduct.price >= 999,
+      installationAvailable: true,
+    },
+    warranty: saraProduct.warranty || '1 Year Manufacturer Warranty',
+  }
+}
+
+interface ProductState {
+  product: ReturnType<typeof getFallbackProduct> | null
+  loading: boolean
+  error: string | null
+  usingFallback: boolean
+}
+
 export default function ProductDetailPage() {
   const params = useParams()
   const productId = params.id as string
-  const product = getProductById(productId)
+  
+  const [productState, setProductState] = useState<ProductState>({
+    product: null,
+    loading: true,
+    error: null,
+    usingFallback: false
+  })
   
   const [selectedImage, setSelectedImage] = useState(0)
   const [quantity, setQuantity] = useState(1)
@@ -82,6 +138,78 @@ export default function ProductDetailPage() {
   
   const addToCart = useCartStore((state) => state.addItem)
   const { addItem: addToWishlist, removeItem: removeFromWishlist, isInWishlist } = useWishlistStore()
+
+  // Fetch product from SaraMobiles API
+  const fetchProduct = async () => {
+    setProductState(prev => ({ ...prev, loading: true, error: null }))
+    
+    try {
+      const response = await saraMobilesAPI.getProduct(productId)
+      
+      if (response.success && response.data) {
+        const detailedProduct = convertToDetailedProduct(response.data)
+        setProductState({
+          product: detailedProduct,
+          loading: false,
+          error: null,
+          usingFallback: false
+        })
+      } else {
+        // Fall back to local data
+        setProductState({
+          product: getFallbackProduct(productId),
+          loading: false,
+          error: null,
+          usingFallback: true
+        })
+      }
+    } catch (error) {
+      console.warn('SaraMobiles API unavailable, using fallback:', error)
+      // API failed, use fallback
+      setProductState({
+        product: getFallbackProduct(productId),
+        loading: false,
+        error: null,
+        usingFallback: true
+      })
+    }
+  }
+
+  useEffect(() => {
+    fetchProduct()
+  }, [productId])
+
+  // Loading state
+  if (productState.loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+        <div className="bg-white border-b border-gray-100">
+          <div className="container-custom py-4">
+            <div className="h-4 bg-gray-200 rounded w-64 animate-pulse" />
+          </div>
+        </div>
+        <div className="container-custom py-8">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
+            <div className="space-y-4">
+              <div className="aspect-square bg-gray-200 rounded-2xl animate-pulse" />
+              <div className="flex gap-3">
+                {[1, 2, 3].map(i => (
+                  <div key={i} className="w-20 h-20 bg-gray-200 rounded-xl animate-pulse" />
+                ))}
+              </div>
+            </div>
+            <div className="space-y-4">
+              <div className="h-8 bg-gray-200 rounded w-3/4 animate-pulse" />
+              <div className="h-6 bg-gray-200 rounded w-1/2 animate-pulse" />
+              <div className="h-12 bg-gray-200 rounded w-1/3 animate-pulse" />
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  const product = productState.product || getFallbackProduct(productId)
   
   const discount = Math.round(((product.mrp - product.price) / product.mrp) * 100)
   const inWishlist = isInWishlist(product.id)

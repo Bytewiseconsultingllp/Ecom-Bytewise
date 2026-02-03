@@ -1,12 +1,28 @@
 "use client"
 
-import { useState, useEffect, Suspense } from 'react'
+import { useState, useEffect, Suspense, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { Filter, SlidersHorizontal, Grid3X3, List, ChevronDown, X } from 'lucide-react'
+import { Filter, SlidersHorizontal, Grid3X3, List, ChevronDown, X, RefreshCw, AlertCircle } from 'lucide-react'
 import ProductCard from '@/components/products/ProductCard'
+import saraMobilesAPI, { convertSaraProductToLocal, SaraProduct } from '@/lib/saramobiles-api'
 
-// Sample products data
-const allProducts = [
+// Product interface for local use
+interface LocalProduct {
+  id: string
+  name: string
+  price: number
+  mrp: number
+  image: string
+  rating: number
+  reviews: number
+  badge: string | null
+  inStock: boolean
+  category: string
+  brand: string
+}
+
+// Fallback sample products data (used when API is unavailable)
+const fallbackProducts: LocalProduct[] = [
   {
     id: 'prod_001',
     name: 'Samsung 55" Crystal 4K Smart TV',
@@ -182,9 +198,23 @@ const sortOptions = [
   { label: 'Newest', value: 'newest' },
 ]
 
+// State for API products
+interface ApiState {
+  products: LocalProduct[]
+  loading: boolean
+  error: string | null
+  usingFallback: boolean
+  pagination: {
+    page: number
+    totalPages: number
+    total: number
+  }
+}
+
 function ProductsContent() {
   const searchParams = useSearchParams()
   const categoryParam = searchParams.get('category')
+  const searchQuery = searchParams.get('search')
   
   const [selectedCategory, setSelectedCategory] = useState(categoryParam || 'all')
   const [selectedBrand, setSelectedBrand] = useState('All Brands')
@@ -192,6 +222,87 @@ function ProductsContent() {
   const [sortBy, setSortBy] = useState('relevance')
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [showFilters, setShowFilters] = useState(false)
+  
+  // API state
+  const [apiState, setApiState] = useState<ApiState>({
+    products: [],
+    loading: true,
+    error: null,
+    usingFallback: false,
+    pagination: { page: 1, totalPages: 1, total: 0 }
+  })
+
+  // Fetch products from SaraMobiles API
+  const fetchProducts = useCallback(async () => {
+    setApiState(prev => ({ ...prev, loading: true, error: null }))
+    
+    const config = saraMobilesAPI.getConfig()
+    console.log('[Products] API Config:', config)
+    
+    if (!config.baseUrl || config.baseUrl === '(not configured)' || !config.hasApiKey) {
+      console.warn('[Products] API not configured, using fallback')
+      setApiState({
+        products: fallbackProducts,
+        loading: false,
+        error: 'API not configured',
+        usingFallback: true,
+        pagination: { page: 1, totalPages: 1, total: fallbackProducts.length }
+      })
+      return
+    }
+    
+    try {
+      console.log('[Products] Fetching from SaraMobiles API...')
+      const response = await saraMobilesAPI.getProducts({
+        category: selectedCategory !== 'all' ? selectedCategory : undefined,
+        search: searchQuery || undefined,
+        brand: selectedBrand !== 'All Brands' ? selectedBrand : undefined,
+        limit: 50,
+      })
+
+      console.log('[Products] API Response:', response)
+
+      // Safely access products with null checks
+      const products = response?.data?.products || []
+      const pagination = response?.data?.pagination || { page: 1, totalPages: 1, total: 0 }
+
+      if (response?.success && products.length > 0) {
+        const localProducts = products.map(convertSaraProductToLocal)
+        setApiState({
+          products: localProducts,
+          loading: false,
+          error: null,
+          usingFallback: false,
+          pagination: pagination
+        })
+      } else {
+        // No products returned from API
+        console.warn('[Products] No products returned, using fallback')
+        setApiState({
+          products: fallbackProducts,
+          loading: false,
+          error: 'No products returned from API',
+          usingFallback: true,
+          pagination: { page: 1, totalPages: 1, total: fallbackProducts.length }
+        })
+      }
+    } catch (error: any) {
+      console.error('[Products] API Error:', error)
+      // API call failed, use fallback products
+      setApiState({
+        products: fallbackProducts,
+        loading: false,
+        error: error?.message || 'Failed to fetch products',
+        usingFallback: true,
+        pagination: { page: 1, totalPages: 1, total: fallbackProducts.length }
+      })
+    }
+  }, [selectedCategory, searchQuery, selectedBrand])
+
+  // Fetch products on mount and when filters change
+  useEffect(() => {
+    fetchProducts()
+  }, [fetchProducts])
 
   useEffect(() => {
     if (categoryParam) {
@@ -199,8 +310,12 @@ function ProductsContent() {
     }
   }, [categoryParam])
 
-  // Filter products
+  // Get products from API state
+  const allProducts = apiState.products
+
+  // Filter products (for local filtering - API already filters by category/brand)
   let filteredProducts = allProducts.filter((product) => {
+    // Category is now handled by API, but we still filter locally for UI consistency
     const categoryMatch = selectedCategory === 'all' || product.category === selectedCategory
     const brandMatch = selectedBrand === 'All Brands' || product.brand === selectedBrand
     const priceMatch = 
@@ -232,19 +347,61 @@ function ProductsContent() {
 
   const hasActiveFilters = selectedCategory !== 'all' || selectedBrand !== 'All Brands' || selectedPriceRange !== 0
 
+  // Loading state
+  if (apiState.loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+        <div className="bg-gradient-to-r from-primary-600 via-primary-700 to-primary-800 text-white">
+          <div className="container-custom py-10">
+            <div className="h-8 bg-white/20 rounded-lg w-48 animate-pulse" />
+            <div className="h-4 bg-white/10 rounded w-32 mt-2 animate-pulse" />
+          </div>
+        </div>
+        <div className="container-custom py-8">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 md:gap-6">
+            {[...Array(8)].map((_, i) => (
+              <div key={i} className="bg-white rounded-2xl p-4 animate-pulse shadow-sm border border-gray-100">
+                <div className="aspect-square bg-gray-200 rounded-xl mb-4" />
+                <div className="h-4 bg-gray-200 rounded w-3/4 mb-2" />
+                <div className="h-4 bg-gray-200 rounded w-1/2 mb-2" />
+                <div className="h-6 bg-gray-200 rounded w-1/3" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
       {/* Page Header */}
       <div className="bg-gradient-to-r from-primary-600 via-primary-700 to-primary-800 text-white">
         <div className="container-custom py-10">
-          <h1 className="text-2xl md:text-4xl font-display font-bold">
-            {selectedCategory === 'all' 
-              ? 'All Products' 
-              : selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)}
-          </h1>
-          <p className="text-primary-100 mt-2">
-            {filteredProducts.length} products found
-          </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl md:text-4xl font-display font-bold">
+                {selectedCategory === 'all' 
+                  ? 'All Products' 
+                  : selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)}
+              </h1>
+              <p className="text-primary-100 mt-2">
+                {filteredProducts.length} products found
+                {apiState.usingFallback && (
+                  <span className="ml-2 text-xs bg-white/20 px-2 py-0.5 rounded-full">Demo Mode</span>
+                )}
+              </p>
+            </div>
+            {/* Refresh button */}
+            <button
+              onClick={fetchProducts}
+              disabled={apiState.loading}
+              className="p-2.5 bg-white/10 hover:bg-white/20 rounded-xl transition-all disabled:opacity-50"
+              title="Refresh products"
+            >
+              <RefreshCw className={`h-5 w-5 ${apiState.loading ? 'animate-spin' : ''}`} />
+            </button>
+          </div>
         </div>
       </div>
 
